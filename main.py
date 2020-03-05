@@ -1,3 +1,5 @@
+
+import sys
 import csv
 import json
 import urllib.request
@@ -29,11 +31,15 @@ def get_datas(url:str)->dict:
     trs = table.findAll('tr')
 
     table_data = []
-    for tr in trs:
-        cells = tr.findAll(['td', 'th'])
+    for i in range(len(trs)):
+        cells = trs[i].findAll(['td', 'th'])
         row = []
         for cell in cells:
-            row.append(cell.get_text())
+            cell_str = cell.get_text()
+            #header cleaning
+            if i == 0:
+                cell_str = cell_str.replace(' ', '')
+            row.append(cell_str)
         table_data.append(row)
 
     date_str = bs.find(id='last_updated').get_text()
@@ -87,5 +93,4 @@ def write_json(filepath:str, dic:dict):
 
 
 if __name__ == '__main__':
-    make_json(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm',
-            filepath='covid19hokkaido.json')
+    make_json(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm', filepath='covid19hokkaido.json')
