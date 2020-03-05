@@ -18,10 +18,10 @@ def get_datas(url:str)->dict:
     ]
 
     html = opener.open(url)
-    bs = BeautifulSoup(html, "html.parser")
+    bs = BeautifulSoup(html, 'html.parser')
 
-    table = bs.findAll("table")[0]
-    trs = table.findAll("tr")
+    table = bs.findAll('table')[0]
+    trs = table.findAll('tr')
 
     table_data = []
     for tr in trs:
@@ -41,7 +41,7 @@ def get_datas(url:str)->dict:
     return datas
 
 def write_csv(filepath:str, rows:list):
-    with open(filepath, "w", encoding='utf-8') as file:
+    with open(filepath, 'w', encoding='utf-8') as file:
         writer = csv.writer(file)
         for row in rows:
             writer.writerow(row)
@@ -51,7 +51,7 @@ def to_dicts(datas:list, date:str)->list:
 
     data_dict = {
         'patients':{
-            'date':"",
+            'date':'',
             'data':[]
         }
     }
@@ -81,6 +81,6 @@ def write_json(filepath:str, dic:dict):
         json.dump(dic, f, indent=4, ensure_ascii=False)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     make_json(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm',
             filepath='covid19hokkaido.json')
