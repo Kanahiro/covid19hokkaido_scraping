@@ -15,11 +15,9 @@ HEADER_PAIRS = {
 
 def make_json(url:str, filepath:str):
     datas = get_datas(url)
-    table = datas['table']
-    date = datas['date']
-    dicts = to_dicts(table, date)
+    dicts = to_dicts(datas['table'], datas['date'])
     summary = calc_patients_summary(dicts['patients']['data'])
-    dicts['patiens_summary'] = summary
+    dicts['patients_summary'] = {'data': summary, 'date': parse_datetext(datas['date'])}
     write_json(filepath, dicts)
 
 def make_csv(url:str, filepath:str):
@@ -78,13 +76,8 @@ def to_dicts(datas:list, date:str)->list:
     }
 
     #datetext parsing
-    parsed_date = re.split('[^0-9]+', date)[1:4]
-    year = int(parsed_date[0])
-    month = int(parsed_date[1])
-    day = int(parsed_date[2])
-    date = datetime.datetime(year, month, day)
-    date_str = date.isoformat()
-    data_dict['patients']['date'] = date_str
+    parsed_date = parse_datetext(date)
+    data_dict['patients']['date'] = parsed_date
 
     #patients data
     headers = datas[0]
@@ -116,6 +109,16 @@ def to_dicts(datas:list, date:str)->list:
 
     data_dict['patients']['data'] = patients_data
     return data_dict
+
+#sample:最終更新日：2020年3月05日（木）
+def parse_datetext(datetext:str)->str:
+    parsed_date = re.split('[^0-9]+', datetext)[1:4]
+    year = int(parsed_date[0])
+    month = int(parsed_date[1])
+    day = int(parsed_date[2])
+    date = datetime.datetime(year, month, day)
+    date_str = date.isoformat()
+    return date_str
 
 def calc_patients_summary(patients:list)->list:
     summary = []
