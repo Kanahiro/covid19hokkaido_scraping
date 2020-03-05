@@ -19,7 +19,7 @@ def get_datas(url:str)->dict:
     opener = urllib.request.build_opener()
     opener.addheaders = [
         ('Referer', 'http://localhost'),
-        ('User-Agent', 'Mozilla/5.0'),
+        ('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36 Edg/79.0.309.65'),
     ]
 
     html = opener.open(url)
