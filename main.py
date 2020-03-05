@@ -10,6 +10,11 @@ def make_json(url:str, filepath:str):
     dicts = to_dicts(table, date)
     write_json(filepath, dicts)
 
+def make_csv(url:str, filepath:str):
+    datas = get_datas(url)
+    table = datas['table']
+    write_csv(filepath, table)
+
 def get_datas(url:str)->dict:
     opener = urllib.request.build_opener()
     opener.addheaders = [
