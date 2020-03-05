@@ -18,6 +18,8 @@ def make_json(url:str, filepath:str):
     table = datas['table']
     date = datas['date']
     dicts = to_dicts(table, date)
+    summary = calc_patients_summary(dicts['patients']['data'])
+    dicts['patiens_summary'] = summary
     write_json(filepath, dicts)
 
 def make_csv(url:str, filepath:str):
@@ -114,6 +116,29 @@ def to_dicts(datas:list, date:str)->list:
 
     data_dict['patients']['data'] = patients_data
     return data_dict
+
+def calc_patients_summary(patients:list)->list:
+    summary = []
+
+    start_day = patients[0]['公表日']
+    start_datetime = datetime.datetime.fromisoformat(start_day)
+
+    while start_datetime <= datetime.datetime.now():
+        day = {
+            '日付':'',
+            '小計':0
+        }
+        day['日付'] = start_datetime.isoformat()
+        
+        for p in patients:
+            if p['公表日'] == day['日付']:
+                day['小計'] = day['小計'] + 1
+
+        summary.append(day)
+        start_datetime = start_datetime + datetime.timedelta(days=1)
+
+    return summary
+
 
 def write_json(filepath:str, dic:dict):
     with open(filepath, 'w') as f:
