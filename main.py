@@ -75,7 +75,7 @@ def to_dicts(datas:list, date:str)->list:
     date_str = year + '/' + month + '/' + day
     data_dict['patients']['date'] = date_str
 
-    #patieant data
+    #patients data
     headers = datas[0]
     maindatas = datas[1:]
     patients_data = []
@@ -93,4 +93,5 @@ def write_json(filepath:str, dic:dict):
 
 
 if __name__ == '__main__':
-    make_json(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm', filepath='covid19hokkaido.json')
+    make_csv(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm', filepath='covid19hokkaido.csv')
+    make_json(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm', filepath='data.json')
