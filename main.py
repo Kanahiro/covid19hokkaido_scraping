@@ -1,3 +1,8 @@
+import csv
+import json
+import urllib.request
+from bs4 import BeautifulSoup
+
 def make_json(url:str, filepath:str):
     datas = get_datas(url)
     table = datas['table']
@@ -6,9 +11,6 @@ def make_json(url:str, filepath:str):
     write_json(filepath, dicts)
 
 def get_datas(url:str)->dict:
-    import urllib.request
-    from bs4 import BeautifulSoup
-    
     opener = urllib.request.build_opener()
     opener.addheaders = [
         ('Referer', 'http://localhost'),
@@ -39,7 +41,6 @@ def get_datas(url:str)->dict:
     return datas
 
 def write_csv(filepath:str, rows:list):
-    import csv
     with open(filepath, "w", encoding='utf-8') as file:
         writer = csv.writer(file)
         for row in rows:
@@ -76,7 +77,6 @@ def to_dicts(datas:list, date:str)->list:
     return data_dict
 
 def write_json(filepath:str, dic:dict):
-    import json
     with open(filepath, 'w') as f:
         json.dump(dic, f, indent=4, ensure_ascii=False)
 
