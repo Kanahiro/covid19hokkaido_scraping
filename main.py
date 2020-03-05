@@ -9,14 +9,10 @@ from bs4 import BeautifulSoup
 
 START_YEAR = 2020
 
-HEADER_PAIRS = {
-
-}
-
 def make_json(url:str, filepath:str):
     datas = get_datas(url)
     dicts = to_dicts(datas['table'], datas['date'])
-    summary = calc_patients_summary(dicts['patients']['data'])
+    summary = calc_patients_summary(dicts['patients'])
     dicts['patients_summary'] = {'data': summary, 'date': parse_datetext(datas['date'])}
     write_json(filepath, dicts)
 
@@ -84,13 +80,19 @@ def to_dicts(datas:list, date:str)->list:
     maindatas = datas[1:]
     patients_data = []
 
+    #rewrite header 公表日 as リリース日
+    for i in range(len(headers)):
+        if headers[i] == '公表日':
+            headers[i] = 'リリース日'
+            break
+
     prev_month = 0 #to judge whether now is 2020 or more
     for data in maindatas:
         dic = {}
         for i in range(len(headers)):
             dic[headers[i]] = data[i]
             #translate MM/DD to ISO-8601 datetime
-            if headers[i] == '公表日':
+            if headers[i] == 'リリース日':
                 md = data[i].split('/')
                 year = START_YEAR
                 month = int(md[0])
@@ -103,6 +105,7 @@ def to_dicts(datas:list, date:str)->list:
                 date = datetime.datetime(year, month, day)
                 date_str = date.isoformat()
                 prev_month = month
+                #rewrite 公表日 as リリース日
                 dic[headers[i]] = date_str
 
         patients_data.append(dic)
@@ -120,21 +123,22 @@ def parse_datetext(datetext:str)->str:
     date_str = date.isoformat()
     return date_str
 
-def calc_patients_summary(patients:list)->list:
+def calc_patients_summary(patients:dict)->list:
     summary = []
 
-    start_day = patients[0]['公表日']
+    start_day = patients['data'][0]['リリース日']
     start_datetime = datetime.datetime.fromisoformat(start_day)
 
-    while start_datetime <= datetime.datetime.now():
+    end_datetime = datetime.datetime.fromisoformat(patients['date'])
+    while start_datetime <= end_datetime:
         day = {
             '日付':'',
             '小計':0
         }
         day['日付'] = start_datetime.isoformat()
         
-        for p in patients:
-            if p['公表日'] == day['日付']:
+        for p in patients['data']:
+            if p['リリース日'] == day['日付']:
                 day['小計'] = day['小計'] + 1
 
         summary.append(day)
