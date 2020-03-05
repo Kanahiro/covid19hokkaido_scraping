@@ -38,7 +38,7 @@ def get_datas(url:str)->dict:
             cell_str = cell.get_text()
             #header cleaning
             if i == 0:
-                cell_str = cell_str.replace(' ', '')
+                cell_str = cell_str.replace(' ', '').replace(' ','')
             row.append(cell_str)
         table_data.append(row)
 
