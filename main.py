@@ -1,7 +1,3 @@
-import csv
-import urllib.request
-from bs4 import BeautifulSoup
-
 def make_json(url:str, filepath:str):
     datas = get_datas(url)
     table = datas['table']
@@ -10,6 +6,9 @@ def make_json(url:str, filepath:str):
     write_json(filepath, dicts)
 
 def get_datas(url:str)->dict:
+    import urllib.request
+    from bs4 import BeautifulSoup
+    
     opener = urllib.request.build_opener()
     opener.addheaders = [
         ('Referer', 'http://localhost'),
