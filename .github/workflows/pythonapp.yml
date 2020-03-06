@@ -5,7 +5,7 @@ name: Python application
 
 on:
   schedule:
-    - cron:  '*/15 * * * *'
+    - cron:  '*/5 * * * *'
 
 jobs:
   build:
@@ -25,3 +25,9 @@ jobs:
     - name: Run script
       run: |
         python main.py
+    - name: deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        publish_branch: dev-pages
