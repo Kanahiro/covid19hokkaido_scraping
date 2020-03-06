@@ -9,19 +9,21 @@ from bs4 import BeautifulSoup
 
 START_YEAR = 2020
 
-def make_json(url:str, filepath:str):
+def make_dicts(url:str):
     datas = get_datas(url)
     dicts = to_dicts(datas['table'], datas['date'])
     summary = calc_patients_summary(dicts['patients'])
     dicts['patients_summary'] = {'data': summary, 'date': parse_datetext(datas['date'])}
-    write_json(filepath, dicts)
+    return dicts
 
-def make_csv(url:str, filepath:str):
-    datas = get_datas(url)
-    table = datas['table']
-    date = datas['date']
-    dicts = to_dicts(table, date)['patients']['data']
-    write_csv(filepath, dicts)
+def make_json(url:str, filename:str):
+    dicts = make_dicts(url)
+    write_json(filename, dicts)
+
+def make_csv(url:str):
+    dicts = make_dicts(url)
+    for key in dicts:
+        write_csv(key + '.csv', dicts[key]['data'])
 
 def get_datas(url:str)->dict:
     opener = urllib.request.build_opener()
@@ -153,5 +155,5 @@ def write_json(filepath:str, dic:dict):
 
 
 if __name__ == '__main__':
-    make_csv(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm', filepath='covid19hokkaido.csv')
-    make_json(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm', filepath='data.json')
+    make_csv(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm')
+    make_json(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm', filename='data.json')
