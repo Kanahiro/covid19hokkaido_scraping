@@ -63,6 +63,8 @@ class CovidDataManager:
                     data = {}
                     for i in range(len(header)):
                         data[header[i]] = d[i]
+                        if header[i] == '小計':
+                            data[header[i]] = int(d[i])
                     datas.append(data)
 
             self.data[filename] = {
