@@ -39,7 +39,7 @@ class CovidDataManager:
             for d in maindatas:
                 csv_rows.append( list(d.values()) )
 
-            with open('data/' + key, 'w', encoding='utf-8') as f:
+            with open('data/' + key + '.csv', 'w', encoding='utf-8') as f:
                 writer = csv.writer(f)
                 writer.writerows(csv_rows)
 
