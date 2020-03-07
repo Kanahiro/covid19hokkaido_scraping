@@ -1,10 +1,10 @@
-contacts
-querents
-patients
-patients_summary
-discharges
-discharges_summary
-inspections
-inspections_summary
-better_patients_summary
-main_summary
+- contacts
+- querents
+- patients
+- patients_summary
+- discharges
+- discharges_summary
+- inspections
+- inspections_summary
+- better_patients_summary
+- main_summary
