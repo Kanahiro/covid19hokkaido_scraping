@@ -8,12 +8,9 @@
 - 実装済データのみ、jsonファイルにデータが追記されます
 
 #### 実装済データとソースは以下のとおりです
-- patients
-http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm
-- patients_summary
-http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm
-- last_update
-main.py実行時点の日時
+- patients:http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm
+- patients_summary:http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm
+- last_update:main.py実行時点の日時
 
 ## Scheduling
 GitHub Actionsにより15分に一度、main.pyを実行してjsonやcsv類をgh-pagesブランチに書き出します
