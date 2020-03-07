@@ -5,7 +5,7 @@ name: Python application
 
 on:
   schedule:
-    - cron:  '*/5 * * * *'
+    - cron:  '*/15 * * * *'
 
 jobs:
   build:
@@ -30,4 +30,4 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./data
-        publish_branch: exporttest
+        publish_branch: gh-pages
