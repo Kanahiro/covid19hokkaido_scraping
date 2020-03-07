@@ -1,6 +1,8 @@
 import csv
 import json
 import datetime
+import glob
+import os
 from patients import PatientsReader
 
 class CovidDataManager:
@@ -47,9 +49,30 @@ class CovidDataManager:
         with open(filepath, 'w') as f:
             json.dump(self.data, f, indent=4, ensure_ascii=False)
 
+    def import_csv(self):
+        csvfiles = glob.glob('./import/*.csv')
+        for csvfile in csvfiles:
+            filename = os.path.splitext(os.path.basename(csvfile))[0]
+            last_modified_time = datetime.datetime.fromtimestamp(os.path.getmtime(csvfile)).isoformat()
+            datas = []
+            with open(csvfile) as f:
+                rows = [row for row in csv.reader(f)]
+                header = rows[0]
+                maindatas = rows[1:]
+                for d in maindatas:
+                    data = {}
+                    for i in range(len(header)):
+                        data[header[i]] = d[i]
+                    datas.append(data)
+
+            self.data[filename] = {
+                'data':datas,
+                'date':last_modified_time
+            }
 
 if __name__ == "__main__":
     dm = CovidDataManager()
     dm.fetch_data()
+    dm.import_csv()
     dm.export_csv()
     dm.export_json()
