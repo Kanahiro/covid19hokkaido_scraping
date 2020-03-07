@@ -91,21 +91,6 @@ class PatientsReader:
         patients_summary = {'data': summary, 'date': self.date}
         return patients_summary
 
-    def make_json(self, url:str, filename:str):
-        dicts = make_dicts(url)
-        write_json(filename, dicts)
-
-    def make_csv(self, url:str):
-        dicts = make_dicts(url)
-        for key in dicts:
-            write_csv(key + '.csv', dicts[key]['data'])
-
-    def write_csv(self, filepath:str, dicts:list):
-        with open(filepath, 'w', encoding='utf-8') as file:
-            writer = csv.DictWriter(file, dicts[0].keys())
-            writer.writeheader()
-            writer.writerows(dicts)
-
     #sample:最終更新日：2020年3月05日（木）
     def parse_datetext(self, datetext:str)->str:
         parsed_date = re.split('[^0-9]+', datetext)[1:4]
@@ -138,16 +123,3 @@ class PatientsReader:
             start_datetime = start_datetime + datetime.timedelta(days=1)
 
         return summary
-
-
-    def write_json(self, filepath:str, dic:dict):
-        with open(filepath, 'w') as f:
-            json.dump(dic, f, indent=4, ensure_ascii=False)
-
-
-if __name__ == '__main__':
-    pr = PatientsReader()
-    print(pr.make_patients_dict())
-    print(pr.make_patients_summary_dict())
-    #pr.make_csv(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm')
-    #pr.make_json(url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm', filename='data.json')
