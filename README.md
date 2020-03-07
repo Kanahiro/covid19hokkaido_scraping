@@ -5,7 +5,8 @@
 - main.pyを実行すると、①スクレイピング実装済データのソースにアクセスし、②importフォルダ内のcsvを読み込んで、jsonファイルとcsvファイルを出力します
 - 出力されるファイルの構造は、[都公式リポジトリ](https://github.com/tokyo-metropolitan-gov/covid19)に準拠しています
 - importフォルダ内のcsvファイル名は、都公式リポジトリに準拠している必要があります
-- スクレイピング実装済データ、もしくはcsvファイルの分だけ、jsonファイルとcsvファイルが出力されます
+- スクレイピング実装済データとcsvファイルの分だけ、jsonファイルとcsvファイルが出力されます
+- スクレイピング実装済で、csvファイルもある場合、csvファイルのデータが優先されます
 
 #### スクレイピング実装済データとソースは以下のとおりです
 - patients:http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm
