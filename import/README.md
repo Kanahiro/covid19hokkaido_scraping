@@ -1,3 +1,5 @@
+このディレクトリに入るべきcsvファイルの名前は以下のとおりです
+
 - contacts
 - querents
 - patients
