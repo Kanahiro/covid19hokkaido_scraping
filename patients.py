@@ -1,7 +1,3 @@
-
-import sys
-import csv
-import json
 import re
 import datetime
 import urllib.request
