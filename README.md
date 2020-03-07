@@ -1,16 +1,15 @@
 ## What is this
-インターネット上の北海道のコロナウィルス情報をBeautifulSoupによりスクレイピングし、得たtableのデータを変換してjsonやcsvとして出力するPythonスクリプトです
+インターネット上の北海道のコロナウィルス情報をスクレイピングし、得たデータを変換してjsonやcsvとして出力するPythonスクリプトです
 
 ## Specification
-- main.pyを実行すると、csvとjsonを出力します
-- 実装済データのみ、csvファイルが出力されます
-- jsonファイルの構造は、都公式リポジトリのdata.jsonに準拠しています
-- 実装済データのみ、jsonファイルにデータが追記されます
+- main.pyを実行すると、①スクレイピング実装済データのソースにアクセスし、②importフォルダ内のcsvを読み込んで、jsonファイルとcsvファイルを出力します
+- 出力されるファイルの構造は、[都公式リポジトリ](https://github.com/tokyo-metropolitan-gov/covid19)に準拠しています
+- importフォルダ内のcsvファイル名は、都公式データに準拠している必要があります
+- スクレイピング実装済データ、もしくはcsvファイルの分だけ、jsonファイルとcsvファイルが出力されます
 
-#### 実装済データとソースは以下のとおりです
+#### スクレイピング実装済データとソースは以下のとおりです
 - patients:http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm
 - patients_summary:http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm
-- last_update:main.py実行時点の日時
 
 ## Scheduling
 GitHub Actionsにより15分に一度、main.pyを実行してjsonやcsv類をgh-pagesブランチに書き出します
