@@ -9,9 +9,9 @@
 
 #### 実装済データとソースは以下のとおりです
 - patients
+http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm
 - patients_summary
 http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm
-
 - last_update
 main.py実行時点の日時
 
