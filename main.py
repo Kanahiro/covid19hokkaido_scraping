@@ -41,12 +41,12 @@ class CovidDataManager:
             for d in maindatas:
                 csv_rows.append( list(d.values()) )
 
-            with open('data/' + key + '.csv', 'w', encoding='utf-8') as f:
+            with open('data/' + key + '.csv', 'w', encoding='utf-8', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerows(csv_rows)
 
     def export_json(self, filepath='data/data.json'):
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(self.data, f, indent=4, ensure_ascii=False)
 
     def import_csv(self):
@@ -55,7 +55,7 @@ class CovidDataManager:
             filename = os.path.splitext(os.path.basename(csvfile))[0]
             last_modified_time = datetime.datetime.fromtimestamp(os.path.getmtime(csvfile)).isoformat()
             datas = []
-            with open(csvfile) as f:
+            with open(csvfile, encoding='utf-8') as f:
                 rows = [row for row in csv.reader(f)]
                 header = rows[0]
                 maindatas = rows[1:]
