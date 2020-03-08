@@ -5,9 +5,10 @@ import glob
 import os
 from patients import PatientsReader
 
+JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
+
 class CovidDataManager:
     def __init__(self):
-        JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
         self.data = {
             'contacts':{},
             'querents':{},
@@ -54,7 +55,7 @@ class CovidDataManager:
         csvfiles = glob.glob('./import/*.csv')
         for csvfile in csvfiles:
             filename = os.path.splitext(os.path.basename(csvfile))[0]
-            last_modified_time = datetime.datetime.fromtimestamp(os.path.getmtime(csvfile)).isoformat()
+            last_modified_time = datetime.datetime.fromtimestamp(os.path.getmtime(csvfile), JST).isoformat()
             datas = []
             with open(csvfile) as f:
                 rows = [row for row in csv.reader(f)]
