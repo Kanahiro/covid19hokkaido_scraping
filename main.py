@@ -7,6 +7,7 @@ from patients import PatientsReader
 
 class CovidDataManager:
     def __init__(self):
+        JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
         self.data = {
             'contacts':{},
             'querents':{},
@@ -17,7 +18,7 @@ class CovidDataManager:
             'inspections':{},
             'inspections_summary':{},
             'better_patients_summary':{},
-            'last_update':datetime.datetime.now().isoformat(),
+            'last_update':datetime.datetime.now(JST).isoformat(),
             'main_summary':{}
         }
 
