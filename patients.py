@@ -32,11 +32,8 @@ class PatientsReader:
                 row.append(cell_str)
             table_data.append(row)
 
-        date_str = bs.find(id='last_updated').get_text()
-        parsed_date_str = self.parse_datetext(date_str)
-
         self.data = table_data
-        self.date = parsed_date_str
+        self.date = datetime.datetime.now(JST).isoformat()
 
     def make_patients_dict(self):
         patients = {
