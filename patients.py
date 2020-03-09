@@ -4,6 +4,7 @@ import urllib.request
 from bs4 import BeautifulSoup
 
 START_YEAR = 2020
+JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
 
 class PatientsReader:
     def __init__(self, url='http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm'):
@@ -31,11 +32,8 @@ class PatientsReader:
                 row.append(cell_str)
             table_data.append(row)
 
-        date_str = bs.find(id='last_updated').get_text()
-        parsed_date_str = self.parse_datetext(date_str)
-
         self.data = table_data
-        self.date = parsed_date_str
+        self.date = datetime.datetime.now(JST).isoformat()
 
     def make_patients_dict(self):
         patients = {
@@ -70,7 +68,7 @@ class PatientsReader:
                     if month < prev_month:
                         year = START_YEAR + 1
                     
-                    date = datetime.datetime(year, month, day)
+                    date = datetime.datetime(year, month, day, tzinfo=JST)
                     date_str = date.isoformat()
                     prev_month = month
                     #rewrite 公表日 as リリース日
@@ -93,7 +91,7 @@ class PatientsReader:
         year = int(parsed_date[0])
         month = int(parsed_date[1])
         day = int(parsed_date[2])
-        date = datetime.datetime(year, month, day)
+        date = datetime.datetime(year, month, day, tzinfo=JST)
         date_str = date.isoformat()
         return date_str
 
