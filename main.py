@@ -3,6 +3,7 @@ import json
 import datetime
 import glob
 import os
+import urllib.request
 from patients import PatientsReader
 
 JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
@@ -77,6 +78,38 @@ class CovidDataManager:
                 'data':datas,
                 'date':last_modified_time
             }
+
+    def import_csv_from_odp(self):
+        responce = urllib.request.urlopen('https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf')
+        print(responce.getcode())
+        if responce.getcode() == 200:
+            loaded_json = json.loads(responce.read().decode('utf-8'))
+            if loaded_json['success'] == True:
+                resources = loaded_json['result']['resources']
+                for resource in resources:
+                    url = resource['download_url']
+                    request_file = urllib.request.urlopen(url)
+                    if request_file.getcode() == 200:
+                        f = request_file.read().decode('utf-8')
+                        filename = resource['filename'].rstrip('.csv')
+                        last_modified_time = resource['updated']
+                        datas = []
+                        rows = [row for row in csv.reader(f.splitlines())]
+                        header = rows[0]
+                        maindatas = rows[1:]
+                        for d in maindatas:
+                            data = {}
+                            for i in range(len(header)):
+                                data[header[i]] = d[i]
+                                if header[i] == '小計':
+                                    data[header[i]] = int(d[i])
+                            datas.append(data)
+
+                        self.data[filename] = {
+                            'data':datas,
+                            'date':last_modified_time
+                        }
+
 
 if __name__ == "__main__":
     dm = CovidDataManager()
