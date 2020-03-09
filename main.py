@@ -51,6 +51,10 @@ class CovidDataManager:
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(self.data, f, indent=4, ensure_ascii=False)
 
+    def export_json_from_name(self, key):
+        with open('data/' + key + '.json', 'w', encoding='utf-8') as f:
+            json.dump(self.data[key], f, indent=4, ensure_ascii=False)
+
     def import_csv(self):
         csvfiles = glob.glob('./import/*.csv')
         for csvfile in csvfiles:
@@ -80,3 +84,5 @@ if __name__ == "__main__":
     dm.import_csv()
     dm.export_csv()
     dm.export_json()
+    for key in dm.data:
+        dm.export_json_from_name(key)
