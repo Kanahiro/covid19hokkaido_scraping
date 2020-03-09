@@ -82,7 +82,5 @@ if __name__ == "__main__":
     dm = CovidDataManager()
     dm.fetch_data()
     dm.import_csv()
-    dm.export_csv()
-    dm.export_json()
     for key in dm.data:
         dm.export_json_from_name(key)
