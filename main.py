@@ -3,6 +3,7 @@ import json
 import datetime
 import glob
 import os
+import urllib.request
 from patients import PatientsReader
 
 JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
@@ -43,13 +44,17 @@ class CovidDataManager:
             for d in maindatas:
                 csv_rows.append( list(d.values()) )
 
-            with open('data/' + key + '.csv', 'w', encoding='utf-8') as f:
+            with open('data/' + key + '.csv', 'w', encoding='utf-8', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerows(csv_rows)
 
     def export_json(self, filepath='data/data.json'):
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(self.data, f, indent=4, ensure_ascii=False)
+
+    def export_json_from_name(self, key):
+        with open('data/' + key + '.json', 'w', encoding='utf-8') as f:
+            json.dump(self.data[key], f, indent=4, ensure_ascii=False)
 
     def import_csv(self):
         csvfiles = glob.glob('./import/*.csv')
@@ -57,16 +62,22 @@ class CovidDataManager:
             filename = os.path.splitext(os.path.basename(csvfile))[0]
             last_modified_time = datetime.datetime.fromtimestamp(os.path.getmtime(csvfile), JST).isoformat()
             datas = []
-            with open(csvfile) as f:
+            with open(csvfile, encoding='utf-8') as f:
                 rows = [row for row in csv.reader(f)]
                 header = rows[0]
                 maindatas = rows[1:]
                 for d in maindatas:
                     data = {}
                     for i in range(len(header)):
-                        data[header[i]] = d[i]
-                        if header[i] == '小計':
-                            data[header[i]] = int(d[i])
+                        if filename == "current_patients":
+                            if i <= 1:
+                                data[header[i]] = d[i]
+                                if header[i] == '患者数':
+                                    data[header[i]] = int(d[i])
+                        else:
+                            data[header[i]] = d[i]
+                            if header[i] == '小計':
+                                data[header[i]] = int(d[i])
                     datas.append(data)
 
             self.data[filename] = {
@@ -74,9 +85,48 @@ class CovidDataManager:
                 'date':last_modified_time
             }
 
+    def import_csv_from_odp(self):
+        responce = urllib.request.urlopen('https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf')
+        print(responce.getcode())
+        if responce.getcode() == 200:
+            loaded_json = json.loads(responce.read().decode('utf-8'))
+            if loaded_json['success'] == True:
+                resources = loaded_json['result']['resources']
+                for resource in resources:
+                    url = resource['download_url']
+                    request_file = urllib.request.urlopen(url)
+                    if request_file.getcode() == 200:
+                        f = request_file.read().decode('utf-8')
+                        filename = resource['filename'].rstrip('.csv')
+                        last_modified_time = resource['updated']
+                        datas = []
+                        rows = [row for row in csv.reader(f.splitlines())]
+                        header = rows[0]
+                        maindatas = rows[1:]
+                        for d in maindatas:
+                            data = {}
+                            for i in range(len(header)):
+                                if filename == "current_patients":
+                                    if i <= 1:
+                                        if header[i] == '患者数':
+                                            data['小計'] = int(d[i])
+                                        else:
+                                            data[header[i]] = d[i]
+                                else:
+                                    data[header[i]] = d[i]
+                                    if header[i] == '小計':
+                                        data[header[i]] = int(d[i])
+                            datas.append(data)
+
+                        self.data[filename] = {
+                            'data':datas,
+                            'date':last_modified_time
+                        }
+
+
 if __name__ == "__main__":
     dm = CovidDataManager()
     dm.fetch_data()
     dm.import_csv()
-    dm.export_csv()
-    dm.export_json()
+    for key in dm.data:
+        dm.export_json_from_name(key)
