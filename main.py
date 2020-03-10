@@ -71,18 +71,20 @@ class CovidDataManager:
                     for i in range(len(header)):
                         if filename == "current_patients":
                             if i <= 1:
-                                data[header[i]] = d[i]
                                 if header[i] == '患者数':
-                                    data[header[i]] = int(d[i])
+                                    data['subtotal'] = int(d[i])
+                                if header[i] == '日付':
+                                    data['date'] = d[i]
                         else:
-                            data[header[i]] = d[i]
                             if header[i] == '小計':
-                                data[header[i]] = int(d[i])
+                                data['subtotal'] = int(d[i])
+                            if header[i] == '日付':
+                                data['date'] = d[i]
                     datas.append(data)
 
             self.data[filename] = {
                 'data':datas,
-                'date':last_modified_time
+                'last_update':last_modified_time
             }
 
     def import_csv_from_odp(self):
@@ -109,24 +111,72 @@ class CovidDataManager:
                                 if filename == "current_patients":
                                     if i <= 1:
                                         if header[i] == '患者数':
-                                            data['小計'] = int(d[i])
-                                        else:
-                                            data[header[i]] = d[i]
+                                            data['subtotal'] = int(d[i])
+                                        if header[i] == '日付':
+                                            data['date'] = d[i]
                                 else:
-                                    data[header[i]] = d[i]
                                     if header[i] == '小計':
-                                        data[header[i]] = int(d[i])
+                                        data['subtotal'] = int(d[i])
+                                    if header[i] == '日付':
+                                        data['date'] = d[i]
                             datas.append(data)
 
                         self.data[filename] = {
                             'data':datas,
-                            'date':last_modified_time
+                            'last_update':last_modified_time
                         }
 
+    def import_csv_from_sdp_contacts(self):
+        request_file = urllib.request.urlopen('https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/e9e6f062-cafd-4aea-992f-039e2e26f4ac/download/contacts.csv')
+        if request_file.getcode() == 200:
+            f = request_file.read().decode('utf-8')
+            filename = 'contacts'
+            datas = []
+            rows = [row for row in csv.reader(f.splitlines())]
+            header = rows[0]
+            maindatas = rows[1:]
+            for d in maindatas:
+                data = {}
+                for i in range(len(header)):
+                    if header[i] == '小計':
+                        data['subtotal'] = int(d[i])
+                    if header[i] == '日付':
+                        data['date'] = d[i]
+                datas.append(data)
+
+            self.data[filename] = {
+                'data': datas,
+                'last_update': datetime.datetime.now(JST).isoformat()
+            }
+
+    def import_csv_from_sdp_querents(self):
+        request_file = urllib.request.urlopen('https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/a89ba566-93d1-416a-a269-e0ba48a06636/download/querents.csv')
+        if request_file.getcode() == 200:
+            f = request_file.read().decode('utf-8')
+            filename = 'querents'
+            datas = []
+            rows = [row for row in csv.reader(f.splitlines())]
+            header = rows[0]
+            maindatas = rows[1:]
+            for d in maindatas:
+                data = {}
+                for i in range(len(header)):
+                    if header[i] == '小計':
+                        data['subtotal'] = int(d[i])
+                    if header[i] == '日付':
+                        data['date'] = d[i]
+                datas.append(data)
+
+            self.data[filename] = {
+                'data': datas,
+                'last_update': datetime.datetime.now(JST).isoformat()
+            }
 
 if __name__ == "__main__":
     dm = CovidDataManager()
     dm.fetch_data()
     dm.import_csv()
+    dm.import_csv_from_sdp_contacts()
+    dm.import_csv_from_sdp_querents()
     for key in dm.data:
         dm.export_json_from_name(key)
