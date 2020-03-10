@@ -69,9 +69,15 @@ class CovidDataManager:
                 for d in maindatas:
                     data = {}
                     for i in range(len(header)):
-                        data[header[i]] = d[i]
-                        if header[i] == '小計':
-                            data[header[i]] = int(d[i])
+                        if filename == "current_patients":
+                            if i <= 1:
+                                data[header[i]] = d[i]
+                                if header[i] == '患者数':
+                                    data[header[i]] = int(d[i])
+                        else:
+                            data[header[i]] = d[i]
+                            if header[i] == '小計':
+                                data[header[i]] = int(d[i])
                     datas.append(data)
 
             self.data[filename] = {
@@ -100,9 +106,16 @@ class CovidDataManager:
                         for d in maindatas:
                             data = {}
                             for i in range(len(header)):
-                                data[header[i]] = d[i]
-                                if header[i] == '小計':
-                                    data[header[i]] = int(d[i])
+                                if filename == "current_patients":
+                                    if i <= 1:
+                                        if header[i] == '患者数':
+                                            data['小計'] = int(d[i])
+                                        else:
+                                            data[header[i]] = d[i]
+                                else:
+                                    data[header[i]] = d[i]
+                                    if header[i] == '小計':
+                                        data[header[i]] = int(d[i])
                             datas.append(data)
 
                         self.data[filename] = {
