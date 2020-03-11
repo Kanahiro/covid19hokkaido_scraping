@@ -4,197 +4,168 @@ import datetime
 import glob
 import os
 import urllib.request
-from patients import PatientsReader
 
+import settings
+
+#日本標準時
 JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
+#外部ファイルの参照設定
+REMOTE_SOURCES = settings.REMOTE_SOURCES
+#headerの変換一覧
+#元データのヘッダーとフロントで設定されているヘッダーのペア
+HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS
+#ファイルエンコーディングリスト
+CODECS = settings.CODECS
 
 class CovidDataManager:
     def __init__(self):
         self.data = {
-            'contacts':{},
-            'querents':{},
-            'patients':{},
-            'patients_summary':{},
-            'discharges':{},
-            'discharges_summary':{},
-            'inspections':{},
-            'inspections_summary':{},
-            'better_patients_summary':{},
-            'last_update':datetime.datetime.now(JST).isoformat(),
-            'main_summary':{}
+            'last_update':datetime.datetime.now(JST).isoformat(), 
         }
+    
+    #REMOTE_SOURCESに基づき外部ファイルにアクセス・データ取得
+    def fetch_datas(self):
+        for key in REMOTE_SOURCES:
+            self.fetch_data_of(key)
 
-    def fetch_data(self):
-        pr = PatientsReader()
-        self.data['patients'] = pr.make_patients_dict()
-        self.data['patients_summary'] = pr.make_patients_summary_dict()
+    def fetch_data_of(self, key):
+        datatype = REMOTE_SOURCES[key]['type']
+        dataurl = REMOTE_SOURCES[key]['url']
+        data = {}
+        if datatype == 'odp':
+            data = self.import_odp_csv(key, dataurl)
+        elif datatype == 'csv':
+            data = self.import_csv_from(dataurl)
+        
+        self.data[key] = data
 
-    def export_csv(self):
+    def export_csv_of(self, key):
+        maindatas = datas['data']
+        header = list(maindatas[0].keys())
+        csv_rows = [ header ]
+        for d in maindatas:
+            csv_rows.append( list(d.values()) )
+
+        with open('data/' + key + '.csv', 'w', encoding='utf-8', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerows(csv_rows)
+
+    def export_csvs(self):
         for key in self.data:
-            if key == 'last_update' or key == 'main_summary':
-                continue
+            self.export_csv_of(key)
 
-            datas = self.data[key]
-            if datas == {}:
-                continue
-            
-            maindatas = datas['data']
-            header = list(maindatas[0].keys())
-            csv_rows = [ header ]
-            for d in maindatas:
-                csv_rows.append( list(d.values()) )
-
-            with open('data/' + key + '.csv', 'w', encoding='utf-8', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerows(csv_rows)
-
-    def export_json(self, filepath='data/data.json'):
-        with open(filepath, 'w', encoding='utf-8') as f:
-            json.dump(self.data, f, indent=4, ensure_ascii=False)
-
-    def export_json_from_name(self, key):
-        with open('data/' + key + '.json', 'w', encoding='utf-8') as f:
+    def export_json_of(self, key, directory='data/'):
+        with open(directory + key + '.json', 'w', encoding='utf-8') as f:
             json.dump(self.data[key], f, indent=4, ensure_ascii=False)
 
-    def import_csv(self):
+    def export_jsons(self, directory='data/'):
+        for key in self.data:
+            self.export_json_of(key, directory)
+
+    #CSV文字列を[dict]型に変換
+    def csvstr_to_dicts(self, csvstr)->list:
+        datas = []
+        rows = [row for row in csv.reader(csvstr.splitlines())]
+        header = rows[0]
+        header = self.translate_header(header)
+        maindatas = rows[1:]
+        for d in maindatas:
+            data = {}
+            for i in range(len(header)):
+                data[header[i]] = d[i]
+                if header[i] == 'subtotal':
+                    data['subtotal'] = int(d[i])
+            datas.append(data)
+        return datas
+
+    #HEADER_TRANSLATIONSに基づきデータのヘッダ(key)を変換
+    def translate_header(self, header:list)->list:
+        for i in range(len(header)):
+            for key in HEADER_TRANSLATIONS:
+                if header[i] == key:
+                    header[i] = HEADER_TRANSLATIONS[key]
+        return header
+
+    #デコード出来るまでCODECS内全コーデックでトライする
+    def decode_csv(self, csv_data)->str:
+        for codec in CODECS:
+            try:
+                csv_str = csv_data.decode(codec)
+                return csv_str
+            except:
+                print('NG:' + codec)
+                continue
+        print('Appropriate codec is not found.')
+
+
+    #importフォルダ内のCSVを全て読み込む
+    def import_local_csvs(self):
         csvfiles = glob.glob('./import/*.csv')
         for csvfile in csvfiles:
             filename = os.path.splitext(os.path.basename(csvfile))[0]
             last_modified_time = datetime.datetime.fromtimestamp(os.path.getmtime(csvfile), JST).isoformat()
             datas = []
+
             with open(csvfile, encoding='utf-8') as f:
-                rows = [row for row in csv.reader(f)]
-                header = rows[0]
-                maindatas = rows[1:]
-                for d in maindatas:
-                    data = {}
-                    for i in range(len(header)):
-                        if filename == "current_patients":
-                            if i <= 1:
-                                if header[i] == '患者数':
-                                    data['subtotal'] = int(d[i])
-                                if header[i] == '日付':
-                                    data['date'] = d[i]
-                        else:
-                            if header[i] == '小計':
-                                data['subtotal'] = int(d[i])
-                            if header[i] == '日付':
-                                data['date'] = d[i]
-                    datas.append(data)
+                datas = self.csvstr_to_dicts(f.read())
 
             self.data[filename] = {
                 'data':datas,
                 'last_update':last_modified_time
             }
 
-    def import_csv_from_odp(self):
-        responce = urllib.request.urlopen('https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf')
-        print(responce.getcode())
-        if responce.getcode() == 200:
-            loaded_json = json.loads(responce.read().decode('utf-8'))
-            if loaded_json['success'] == True:
-                resources = loaded_json['result']['resources']
-                for resource in resources:
-                    url = resource['download_url']
-                    request_file = urllib.request.urlopen(url)
-                    if request_file.getcode() == 200:
-                        f = request_file.read().decode('utf-8')
-                        print(resource['filename'])
-                        filename = resource['filename'].replace('.csv', '')
-                        last_modified_time = resource['updated']
-                        datas = []
-                        rows = [row for row in csv.reader(f.splitlines())]
-                        header = rows[0]
-                        for i in range(len(header)):
-                            header[i] = header[i].replace('\ufeff', '')
+    #Open Data Potal APIでCSVファイルをインポート
+    def import_odp_csv(self, key, odp_url):
+        response = urllib.request.urlopen(odp_url)
 
-                        maindatas = rows[1:]
-                        for d in maindatas:
-                            data = {}
-                            for i in range(len(header)):
-                                if filename == "current_patients":
-                                    if header[i] == '患者数':
-                                        data['subtotal'] = int(d[i])
-                                    if header[i] == '日付':
-                                        data['date'] = d[i]
+        status_code = response.getcode()
+        if not status_code == 200:
+            print(status_code, 'error occured')
+            return
 
-                                elif filename == "patients":
-                                    if header[i] == 'リリース日':
-                                        data['date'] = d[i]
-                                    if header[i] == 'No':
-                                        data['no'] = d[i]
-                                    if header[i] == '年代':
-                                        data['age'] = d[i]
-                                    if header[i] == '性別':
-                                        data['sex'] = d[i]
-                                    if header[i] == '居住地':
-                                        data['place'] = d[i]
-                                    if header[i] == '周囲の状況':
-                                        data['other_patient'] = d[i]
-                                    if header[i] == '濃厚接触者の状況':
-                                        data['contact_person'] = d[i]
-                                else:
-                                    if header[i] == '小計':
-                                        data['subtotal'] = int(d[i])
-                                    if header[i] == '日付':
-                                        data['date'] = d[i]
-                            datas.append(data)
+        loaded_json = json.loads(response.read().decode('utf-8'))
+        if not loaded_json['success']:
+            print('get json error')
+            return
 
-                        self.data[filename] = {
-                            'data':datas,
-                            'last_update':last_modified_time
-                        }
+        url = ''
+        updated_datetime = ''
+        resources = loaded_json['result']['resources']
+        for resource in resources:
+            if resource['name'] == key + '.csv':
+                url = resource['download_url']
+                updated_datetime = resource['updated'] #iso-8601
 
-    def import_csv_from_sdp_contacts(self):
-        request_file = urllib.request.urlopen('https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/e9e6f062-cafd-4aea-992f-039e2e26f4ac/download/contacts.csv')
-        if request_file.getcode() == 200:
-            f = request_file.read().decode('utf-8')
-            filename = 'contacts'
-            datas = []
-            rows = [row for row in csv.reader(f.splitlines())]
-            header = rows[0]
-            maindatas = rows[1:]
-            for d in maindatas:
-                data = {}
-                for i in range(len(header)):
-                    if header[i] == '小計':
-                        data['subtotal'] = int(d[i])
-                    if header[i] == '日付':
-                        data['date'] = d[i]
-                datas.append(data)
+        request_file = urllib.request.urlopen(url)
+        if not request_file.getcode() == 200:
+            print('csv get error')
+            return
+        
+        csvstr = self.decode_csv(request_file.read())
+        datas = self.csvstr_to_dicts(csvstr)
 
-            self.data[filename] = {
-                'data': datas,
-                'last_update': datetime.datetime.now(JST).isoformat()
-            }
+        return {
+            'data':datas,
+            'last_update':updated_datetime
+        }
 
-    def import_csv_from_sdp_querents(self):
-        request_file = urllib.request.urlopen('https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/a89ba566-93d1-416a-a269-e0ba48a06636/download/querents.csv')
-        if request_file.getcode() == 200:
-            f = request_file.read().decode('utf-8')
-            filename = 'querents'
-            datas = []
-            rows = [row for row in csv.reader(f.splitlines())]
-            header = rows[0]
-            maindatas = rows[1:]
-            for d in maindatas:
-                data = {}
-                for i in range(len(header)):
-                    if header[i] == '小計':
-                        data['subtotal'] = int(d[i])
-                    if header[i] == '日付':
-                        data['date'] = d[i]
-                datas.append(data)
+    #外部のCSVファイルをインポート url=xxxx/xxxx.csv
+    def import_csv_from(self, csvurl):
+        request_file = urllib.request.urlopen(csvurl)
+        if not request_file.getcode() == 200:
+            return
+        
+        f = self.decode_csv(request_file.read())
+        filename = os.path.splitext(os.path.basename(csvurl))[0]
+        datas = self.csvstr_to_dicts(f)
 
-            self.data[filename] = {
-                'data': datas,
-                'last_update': datetime.datetime.now(JST).isoformat()
-            }
+        return {
+            'data': datas,
+            'last_update': datetime.datetime.now(JST).isoformat()
+        }
 
 if __name__ == "__main__":
     dm = CovidDataManager()
-    dm.import_csv_from_odp()
-    dm.import_csv_from_sdp_contacts()
-    dm.import_csv_from_sdp_querents()
-    for key in dm.data:
-        dm.export_json_from_name(key)
+    dm.fetch_datas()
+    dm.import_local_csvs()
+    dm.export_jsons()
