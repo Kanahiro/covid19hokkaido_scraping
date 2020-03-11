@@ -16,3 +16,13 @@ REMOTE_SOURCES = {
         'type':'odp'
     }
 }
+
+HEADER_TRANSLATIONS = {
+    '小計':'subtotal',
+    '日付':'date',
+    'No':'no',
+    'リリース日':'date',
+    '居住地':'place',
+    '年代':'age',
+    '性別':'sex',
+}

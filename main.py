@@ -12,14 +12,17 @@ import settings
 JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
 #外部ファイルの参照設定
 REMOTE_SOURCES = settings.REMOTE_SOURCES
+#headerの変換一覧
+#元データのヘッダーとフロントで設定されているヘッダーのペア
+HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS
 
 class CovidDataManager:
     def __init__(self):
         self.data = {
-            'last_update':datetime.datetime.now(JST).isoformat(),
+            'last_update':datetime.datetime.now(JST).isoformat(), 
         }
     
-    #外部ファイルにアクセス・データ取得
+    #REMOTE_SOURCESに基づき外部ファイルにアクセス・データ取得
     def fetch_datas(self):
         for key in REMOTE_SOURCES:
             self.fetch_data_of(key)
@@ -63,6 +66,7 @@ class CovidDataManager:
         datas = []
         rows = [row for row in csv.reader(csvstr.splitlines())]
         header = rows[0]
+        header = self.translate_header(header)
         maindatas = rows[1:]
         
         for d in maindatas:
@@ -73,6 +77,16 @@ class CovidDataManager:
                     data['subtotal'] = int(d[i])
             datas.append(data)
         return datas
+
+    #HEADER_TRANSLATIONSに基づきデータのヘッダ(key)を変換
+    def translate_header(self, header:list)->list:
+        for i in range(len(header)):
+            for key in HEADER_TRANSLATIONS:
+                if header[i] == key:
+                    header[i] = HEADER_TRANSLATIONS[key]
+        return header
+
+            
 
     #importフォルダ内のCSVを全て読み込む
     def import_local_csvs(self):
