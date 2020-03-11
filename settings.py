@@ -36,7 +36,9 @@ HEADER_TRANSLATIONS = {
     '居住地':'place',
     '年代':'age',
     '性別':'sex',
-    '患者数':'subtotal'
+    '患者数':'subtotal',
+    '日陽性数':'subtotal',
+    '日治療完了数':'subtotal'
 }
 
 #先にある順にデコードされます
