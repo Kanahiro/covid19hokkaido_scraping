@@ -1,5 +1,5 @@
 ## What is this
-インターネット上の北海道のコロナウィルス情報をスクレイピングし、得たデータを変換してjsonやcsvとして出力するPythonスクリプトです
+北海道の新型コロナウイルス情報を集め、jsonやcsvとして出力するPythonスクリプトです
 
 ## Specification
 - main.pyを実行すると、①settings.pyのREMOTE_SOURCESに基づき外部データを取得し、②importフォルダ内のcsvを読み込んで、データの数だけjsonファイルを出力します
@@ -18,3 +18,7 @@
 
 ## Scheduling
 GitHub Actionsにより15分に一度、main.pyを実行してjson類をgh-pagesブランチに書き出します
+
+## 外部からのアクセス
+gh-pagesブランチにあるjsonデータに直接アクセスしてデータを読み出す事が出来ます。
+sample: https://raw.githubusercontent.com/codeforsapporo/covid19hokkaido_scraping/gh-pages/patients.json
