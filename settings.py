@@ -38,7 +38,7 @@ HEADER_TRANSLATIONS = {
     '性別':'sex',
     '患者数':'subtotal',
     '日陽性数':'subtotal',
-    '日治療完了数':'subtotal'
+    '日治療終了数':'subtotal'
 }
 
 #先にある順にデコードされます
