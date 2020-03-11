@@ -9,36 +9,41 @@ REMOTE_SOURCES = {
         'type':'csv'
     },
     'patients':{
-        'url':'https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf',
-        'type':'odp'
+        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2828/patients.csv',
+        'type':'csv'
     },
     'patients_summary':{
-        'url':'https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf',
-        'type':'odp'
+        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2829/patients_summary.csv',
+        'type':'csv'
     },
     'discharges_summary':{
-        'url':'https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf',
-        'type':'odp'
+        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2833/discharges_summary.csv',
+        'type':'csv'
     },
     'current_patients':{
-        'url':'https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf',
-        'type':'odp'
+        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2832/current_patients.csv',
+        'type':'csv'
+    },
+    'inspections':{
+        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2837/inspections.csv',
+        'type':'csv'
     }
 }
 
 #ヘッダーにkeyがあればvalueに置き換えます
 HEADER_TRANSLATIONS = {
-    '小計':'subtotal',
-    '日付':'date',
     'No':'no',
     '\ufeffNo':'no',#ODPのデータが綺麗になったら不要
     'リリース日':'date',
     '居住地':'place',
     '年代':'age',
     '性別':'sex',
+    '小計':'subtotal',
+    '日付':'date',
     '患者数':'subtotal',
     '日陽性数':'subtotal',
-    '日治療終了数':'subtotal'
+    '日治療終了数':'subtotal',
+    '日検査数':'subtotal'
 }
 
 #先にある順にデコードされます
