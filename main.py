@@ -14,6 +14,8 @@ REMOTE_SOURCES = settings.REMOTE_SOURCES
 #headerの変換一覧
 #元データのヘッダーとフロントで設定されているヘッダーのペア
 HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS
+#ファイルエンコーディングリスト
+CODECS = settings.CODECS
 
 class CovidDataManager:
     def __init__(self):
@@ -67,7 +69,6 @@ class CovidDataManager:
         header = rows[0]
         header = self.translate_header(header)
         maindatas = rows[1:]
-        
         for d in maindatas:
             data = {}
             for i in range(len(header)):
@@ -85,7 +86,17 @@ class CovidDataManager:
                     header[i] = HEADER_TRANSLATIONS[key]
         return header
 
-            
+    #デコード出来るまでCODECS内全コーデックでトライする
+    def decode_csv(self, csv_data)->str:
+        for codec in CODECS:
+            try:
+                csv_str = csv_data.decode(codec)
+                return csv_str
+            except:
+                print('NG:' + codec)
+                continue
+        print('Appropriate codec is not found.')
+
 
     #importフォルダ内のCSVを全て読み込む
     def import_local_csvs(self):
@@ -130,7 +141,7 @@ class CovidDataManager:
             print('csv get error')
             return
         
-        csvstr = request_file.read().decode('utf-8')
+        csvstr = self.decode_csv(request_file.read())
         datas = self.csvstr_to_dicts(csvstr)
 
         return {
@@ -144,7 +155,7 @@ class CovidDataManager:
         if not request_file.getcode() == 200:
             return
         
-        f = request_file.read().decode('utf-8')
+        f = self.decode_csv(request_file.read())
         filename = os.path.splitext(os.path.basename(csvurl))[0]
         datas = self.csvstr_to_dicts(f)
 

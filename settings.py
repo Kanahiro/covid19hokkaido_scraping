@@ -1,3 +1,4 @@
+#外部リソース定義
 REMOTE_SOURCES = {
     'contacts':{
         'url':'https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/e9e6f062-cafd-4aea-992f-039e2e26f4ac/download/contacts.csv',
@@ -17,6 +18,7 @@ REMOTE_SOURCES = {
     }
 }
 
+#ヘッダーにkeyがあればvalueに置き換えます
 HEADER_TRANSLATIONS = {
     '小計':'subtotal',
     '日付':'date',
@@ -26,4 +28,12 @@ HEADER_TRANSLATIONS = {
     '居住地':'place',
     '年代':'age',
     '性別':'sex',
+    '患者数':'subtotal'
 }
+
+#先にある順にデコードされます
+CODECS = ['utf-8','cp932','shift_jis','euc_jp',
+          'euc_jis_2004','euc_jisx0213',
+          'iso2022_jp','iso2022_jp_1','iso2022_jp_2','iso2022_jp_2004','iso2022_jp_3','iso2022_jp_ext',
+          'shift_jis_2004','shift_jisx0213',
+          'utf_16','utf_16_be','utf_16_le','utf_7','utf_8_sig']
