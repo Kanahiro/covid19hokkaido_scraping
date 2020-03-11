@@ -21,6 +21,7 @@ HEADER_TRANSLATIONS = {
     '小計':'subtotal',
     '日付':'date',
     'No':'no',
+    '\ufeffNo':'no',#ODPのデータが綺麗になったら不要
     'リリース日':'date',
     '居住地':'place',
     '年代':'age',
