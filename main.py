@@ -99,21 +99,40 @@ class CovidDataManager:
                     request_file = urllib.request.urlopen(url)
                     if request_file.getcode() == 200:
                         f = request_file.read().decode('utf-8')
-                        filename = resource['filename'].rstrip('.csv')
+                        print(resource['filename'])
+                        filename = resource['filename'].replace('.csv', '')
                         last_modified_time = resource['updated']
                         datas = []
                         rows = [row for row in csv.reader(f.splitlines())]
                         header = rows[0]
+                        for i in range(len(header)):
+                            header[i] = header[i].replace('\ufeff', '')
+
                         maindatas = rows[1:]
                         for d in maindatas:
                             data = {}
                             for i in range(len(header)):
                                 if filename == "current_patients":
-                                    if i <= 1:
-                                        if header[i] == '患者数':
-                                            data['subtotal'] = int(d[i])
-                                        if header[i] == '日付':
-                                            data['date'] = d[i]
+                                    if header[i] == '患者数':
+                                        data['subtotal'] = int(d[i])
+                                    if header[i] == '日付':
+                                        data['date'] = d[i]
+
+                                elif filename == "patients":
+                                    if header[i] == 'リリース日':
+                                        data['date'] = d[i]
+                                    if header[i] == 'No':
+                                        data['no'] = d[i]
+                                    if header[i] == '年代':
+                                        data['age'] = d[i]
+                                    if header[i] == '性別':
+                                        data['sex'] = d[i]
+                                    if header[i] == '居住地':
+                                        data['place'] = d[i]
+                                    if header[i] == '周囲の状況':
+                                        data['other_patient'] = d[i]
+                                    if header[i] == '濃厚接触者の状況':
+                                        data['contact_person'] = d[i]
                                 else:
                                     if header[i] == '小計':
                                         data['subtotal'] = int(d[i])
@@ -174,8 +193,7 @@ class CovidDataManager:
 
 if __name__ == "__main__":
     dm = CovidDataManager()
-    dm.fetch_data()
-    dm.import_csv()
+    dm.import_csv_from_odp()
     dm.import_csv_from_sdp_contacts()
     dm.import_csv_from_sdp_querents()
     for key in dm.data:
