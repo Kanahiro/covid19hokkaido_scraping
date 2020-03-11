@@ -15,6 +15,14 @@ REMOTE_SOURCES = {
     'patients_summary':{
         'url':'https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf',
         'type':'odp'
+    },
+    'discharges_summary':{
+        'url':'https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf',
+        'type':'odp'
+    },
+    'current_patients':{
+        'url':'https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf',
+        'type':'odp'
     }
 }
 
