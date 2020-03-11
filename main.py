@@ -5,7 +5,6 @@ import glob
 import os
 import urllib.request
 
-from patients import PatientsReader
 import settings
 
 #日本標準時
