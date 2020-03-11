@@ -1,5 +1,5 @@
 ## What is this
-インターネット上の北海道のコロナウィルス情報をスクレイピングし、得たデータを変換してjsonやcsvとして出力するPythonスクリプトです
+北海道の新型コロナウイルス情報を集め、jsonやcsvとして出力するPythonスクリプトです
 
 ## Specification
 - main.pyを実行すると、①settings.pyのREMOTE_SOURCESに基づき外部データを取得し、②importフォルダ内のcsvを読み込んで、データの数だけjsonファイルを出力します
@@ -7,14 +7,19 @@
 - settings.pyとimportフォルダ内に、同じkeyがある場合、importフォルダが優先されます
 
 ## 現在実装されているデータ
-|  data  |  source  | url  |
-| ---- | ---- | ---- |
-|  patients  | ODP |  https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf  |
-|  patients_summary  | ODP |  https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf  |
-|  contacts  | CKAN(CSV) |  https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/e9e6f062-cafd-4aea-992f-039e2e26f4ac/download/contacts.csv  |
-|  querents  | CKAN(CSV) |  https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/a89ba566-93d1-416a-a269-e0ba48a06636/download/querents.csv  |
-|  current_patients  | ODP |  https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf  |
-|  discharges_summary  | ODP |  https://www.harp.lg.jp/opendata/api/package_show?id=752c577e-0cbe-46e0-bebd-eb47b71b38bf  |
+| データ |  key  |  source  | url  |
+| ---- | ---- | ---- | ---- |
+|  陽性患者の属性  |  patients  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
+|  陽性患者数（日別）  |  patients_summary  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
+|  日別患者増減数  |  current_patients  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
+|  治療修了者数  |  discharges_summary  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
+|  日別検査数  |  inspections  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
+|  日別窓口相談件数（札幌市保健所）  |  contacts  | DATA SMART CITY SAPPORO |  https://ckan.pf-sapporo.jp/dataset/covid_19_soudan  |
+|  日別電話相談件数 （札幌市保健所） |  querents  | DATA SMART CITY SAPPORO |  https://ckan.pf-sapporo.jp/dataset/covid_19_soudan  |
 
 ## Scheduling
 GitHub Actionsにより15分に一度、main.pyを実行してjson類をgh-pagesブランチに書き出します
+
+## 外部からのアクセス
+gh-pagesブランチにあるjsonデータに直接アクセスしてデータを読み出す事が出来ます。
+sample: https://raw.githubusercontent.com/codeforsapporo/covid19hokkaido_scraping/gh-pages/patients.json
