@@ -4,6 +4,7 @@ import datetime
 import glob
 import os
 import urllib.request
+import jsonschema
 
 import settings
 
@@ -17,6 +18,10 @@ HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS
 INT_CAST_KEYS = settings.INT_CAST_KEYS
 #ファイルエンコーディングリスト
 CODECS = settings.CODECS
+
+#バリデーション用のスキーマ定義
+import schemas
+SCHEMAS = schemas.SCHEMAS
 
 class CovidDataManager:
     def __init__(self):
@@ -78,6 +83,11 @@ class CovidDataManager:
                     data[header[i]] = int(d[i])
             datas.append(data)
         return datas
+
+    #生成されるjsonの正当性チェック
+    def validate(self):
+        for key in self.data:
+            jsonschema.validate(self.data[key], SCHEMAS[key])
 
     #HEADER_TRANSLATIONSに基づきデータのヘッダ(key)を変換
     def translate_header(self, header:list)->list:
@@ -169,4 +179,5 @@ if __name__ == "__main__":
     dm = CovidDataManager()
     dm.fetch_datas()
     dm.import_local_csvs()
+    dm.validate()
     dm.export_jsons()
