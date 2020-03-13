@@ -13,29 +13,13 @@ SCHEMAS = {
                     "type": "object",
                     "default": {},
                     "required": [
-                        "No",
                         "リリース日",
-                        "曜日",
                         "居住地",
                         "年代",
-                        "性別",
-                        "属性",
-                        "備考",
-                        "補足",
-                        "退院",
-                        "周囲の状況",
-                        "濃厚接触者の状況"
+                        "性別"
                     ],
                     "properties": {
-                        "No": {
-                            "type": "string",
-                            "default": ""
-                        },
                         "リリース日": {
-                            "type": "string",
-                            "default": ""
-                        },
-                        "曜日": {
                             "type": "string",
                             "default": ""
                         },
@@ -48,30 +32,6 @@ SCHEMAS = {
                             "default": ""
                         },
                         "性別": {
-                            "type": "string",
-                            "default": ""
-                        },
-                        "属性": {
-                            "type": "string",
-                            "default": ""
-                        },
-                        "備考": {
-                            "type": "string",
-                            "default": ""
-                        },
-                        "補足": {
-                            "type": "string",
-                            "default": ""
-                        },
-                        "退院": {
-                            "type": "string",
-                            "default": ""
-                        },
-                        "周囲の状況": {
-                            "type": "string",
-                            "default": ""
-                        },
-                        "濃厚接触者の状況": {
                             "type": "string",
                             "default": ""
                         }
