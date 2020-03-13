@@ -34,6 +34,16 @@ REMOTE_SOURCES = {
 HEADER_TRANSLATIONS = {
 }
 
+#intにキャストすべきkey
+#translation後のkeyを指定する必要があります
+INT_CAST_KEYS = [
+    '小計',
+    '患者数',
+    '日治療終了数',
+    '日陽性数',
+    '日検査数'
+]
+
 #先にある順にデコードされます
 CODECS = ['utf-8','cp932','shift_jis','euc_jp',
           'euc_jis_2004','euc_jisx0213',

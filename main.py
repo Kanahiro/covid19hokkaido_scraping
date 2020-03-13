@@ -12,8 +12,9 @@ JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
 #外部ファイルの参照設定
 REMOTE_SOURCES = settings.REMOTE_SOURCES
 #headerの変換一覧
-#元データのヘッダーとフロントで設定されているヘッダーのペア
 HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS
+#intにキャストすべきkey
+INT_CAST_KEYS = settings.INT_CAST_KEYS
 #ファイルエンコーディングリスト
 CODECS = settings.CODECS
 
@@ -73,8 +74,8 @@ class CovidDataManager:
             data = {}
             for i in range(len(header)):
                 data[header[i]] = d[i]
-                if header[i] == 'subtotal':
-                    data['subtotal'] = int(d[i])
+                if header[i] in INT_CAST_KEYS:
+                    data[header[i]] = int(d[i])
             datas.append(data)
         return datas
 
