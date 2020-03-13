@@ -32,19 +32,17 @@ REMOTE_SOURCES = {
 
 #ヘッダーにkeyがあればvalueに置き換えます
 HEADER_TRANSLATIONS = {
-    'No':'no',
-    '\ufeffNo':'no',#ODPのデータが綺麗になったら不要
-    'リリース日':'date',
-    '居住地':'place',
-    '年代':'age',
-    '性別':'sex',
-    '小計':'subtotal',
-    '日付':'date',
-    '患者数':'subtotal',
-    '日陽性数':'subtotal',
-    '日治療終了数':'subtotal',
-    '日検査数':'subtotal'
 }
+
+#intにキャストすべきkey
+#translation後のkeyを指定する必要があります
+INT_CAST_KEYS = [
+    '小計',
+    '患者数',
+    '日治療終了数',
+    '日陽性数',
+    '日検査数'
+]
 
 #先にある順にデコードされます
 CODECS = ['utf-8','cp932','shift_jis','euc_jp',
