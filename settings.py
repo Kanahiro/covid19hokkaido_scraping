@@ -32,18 +32,6 @@ REMOTE_SOURCES = {
 
 #ヘッダーにkeyがあればvalueに置き換えます
 HEADER_TRANSLATIONS = {
-    'No':'no',
-    '\ufeffNo':'no',#ODPのデータが綺麗になったら不要
-    'リリース日':'date',
-    '居住地':'place',
-    '年代':'age',
-    '性別':'sex',
-    '小計':'subtotal',
-    '日付':'date',
-    '患者数':'subtotal',
-    '日陽性数':'subtotal',
-    '日治療終了数':'subtotal',
-    '日検査数':'subtotal'
 }
 
 #先にある順にデコードされます
