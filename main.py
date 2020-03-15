@@ -4,6 +4,7 @@ import datetime
 import glob
 import os
 import urllib.request
+import jsonschema
 
 import settings
 
@@ -12,10 +13,15 @@ JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
 #外部ファイルの参照設定
 REMOTE_SOURCES = settings.REMOTE_SOURCES
 #headerの変換一覧
-#元データのヘッダーとフロントで設定されているヘッダーのペア
 HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS
+#intにキャストすべきkey
+INT_CAST_KEYS = settings.INT_CAST_KEYS
 #ファイルエンコーディングリスト
 CODECS = settings.CODECS
+
+#バリデーション用のスキーマ定義
+import schemas
+SCHEMAS = schemas.SCHEMAS
 
 class CovidDataManager:
     def __init__(self):
@@ -73,10 +79,15 @@ class CovidDataManager:
             data = {}
             for i in range(len(header)):
                 data[header[i]] = d[i]
-                if header[i] == 'subtotal':
-                    data['subtotal'] = int(d[i])
+                if header[i] in INT_CAST_KEYS:
+                    data[header[i]] = int(d[i])
             datas.append(data)
         return datas
+
+    #生成されるjsonの正当性チェック
+    def validate(self):
+        for key in self.data:
+            jsonschema.validate(self.data[key], SCHEMAS[key])
 
     #HEADER_TRANSLATIONSに基づきデータのヘッダ(key)を変換
     def translate_header(self, header:list)->list:
@@ -168,4 +179,5 @@ if __name__ == "__main__":
     dm = CovidDataManager()
     dm.fetch_datas()
     dm.import_local_csvs()
+    dm.validate()
     dm.export_jsons()

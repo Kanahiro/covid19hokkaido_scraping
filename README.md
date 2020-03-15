@@ -6,7 +6,8 @@
 ## Specification
 - main.pyを実行すると、①settings.pyのREMOTE_SOURCESに基づき外部データを取得し、②importフォルダ内のcsvを読み込んで、データの数だけjsonファイルを出力します
 - jsonの出力前に、データのカラム名は[北海道 新型コロナウイルスまとめサイト](https://github.com/codeforsapporo/covid19)に準拠するよう変換されます(settings.pyのHEADER_TRANSLATIONSに基づきます)
-- settings.pyとimportフォルダ内に、同じkeyがある場合、importフォルダが優先されます
+- jsonの出力前に、schemas.pyのスキーマ定義に基づきデータがバリデーションされます（異常が発生する場合jsonは出力されません）
+- settings.pyとimportフォルダ内に同じkeyがある場合、importフォルダが優先されます
 
 ## 現在実装されているデータ
 | データ |  key  |  source  | url  |
