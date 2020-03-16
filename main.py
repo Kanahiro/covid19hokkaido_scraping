@@ -189,7 +189,8 @@ class CovidDataManager:
         for p in patients_summary:
             patients_sum += p['日陽性数']
 
-        #患者数、軽症・中等症者数、重傷者数、死亡者数、陰性確認者数
+
+        #患者数、軽症・中等症者数、重傷者数、死亡者数
         current_patients_sum = 0
         mild_patients_sum = 0
         critical_patients_sum = 0
@@ -204,6 +205,12 @@ class CovidDataManager:
             if not c['死亡']  == '':
                 dead_patients_sum += int(c['死亡'])
 
+        #陰性確認者数
+        discharges_sum = 0
+        discharges_summary = self.data['discharges_summary']['data']
+        for d in discharges_summary:
+            discharges_sum += d['日治療終了数']
+
         main_summary = {
             '検査人数':inspection_sum,
             '陽性者数':patients_sum,
@@ -211,7 +218,7 @@ class CovidDataManager:
             '軽症・中等症者数':mild_patients_sum,
             '重傷者数':critical_patients_sum,
             '死亡者数':dead_patients_sum,
-            '陰性確認数':patients_sum - current_patients_sum - dead_patients_sum
+            '陰性確認数':discharges_sum
         }
 
         self.data['main_summary'] = main_summary
