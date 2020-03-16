@@ -1,3 +1,5 @@
+![Python application](https://github.com/codeforsapporo/covid19hokkaido_scraping/workflows/Python%20application/badge.svg)
+
 ## What is this
 北海道の新型コロナウイルス情報を集め、jsonやcsvとして出力するPythonスクリプトです
 
