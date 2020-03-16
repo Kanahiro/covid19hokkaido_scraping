@@ -257,5 +257,47 @@ SCHEMAS = {
     "last_update":{
                 "type": "string",
                 "default": ""
+    },
+    "main_summary":{
+        "type": "object",
+        "required": [
+            "検査人数",
+            "陽性者数",
+            "患者数",
+            "軽症・中等症者数",
+            "重傷者数",
+            "死亡者数",
+            "陰性確認数"
+        ],
+        "properties": {
+            "検査人数": {
+                "type": "integer",
+                "default": 0
+            },
+            "陽性者数": {
+                "type": "integer",
+                "default": 0
+            },
+            "患者数": {
+                "type": "integer",
+                "default": 0
+            },
+            "軽症・中等症者数": {
+                "type": "integer",
+                "default": 0
+            },
+            "重傷者数": {
+                "type": "integer",
+                "default": 0
+            },
+            "死亡者数": {
+                "type": "integer",
+                "default": 0
+            },
+            "陰性確認数": {
+                "type": "integer",
+                "default": 0
             }
+        }
+    }
 }
