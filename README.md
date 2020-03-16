@@ -2,8 +2,7 @@
 北海道の新型コロナウイルス情報を集め、jsonやcsvとして出力するPythonスクリプトです
 
 ## Specification
-- main.pyを実行すると、①settings.pyのREMOTE_SOURCESに基づき外部データを取得し、②importフォルダ内のcsvを読み込んで、データの数だけjsonファイルを出力します
-- jsonの出力前に、データのカラム名は[北海道 新型コロナウイルスまとめサイト](https://github.com/codeforsapporo/covid19)に準拠するよう変換されます(settings.pyのHEADER_TRANSLATIONSに基づきます)
+- main.pyを実行すると、①settings.pyのREMOTE_SOURCESに基づき外部データを取得し、②①のデータを集計してmain_summaryを生成し、③importフォルダ内のcsvを読み込んで、それら全てのデータのjsonファイルを出力します
 - jsonの出力前に、schemas.pyのスキーマ定義に基づきデータがバリデーションされます（異常が発生する場合jsonは出力されません）
 - settings.pyとimportフォルダ内に同じkeyがある場合、importフォルダが優先されます
 
@@ -20,7 +19,7 @@
 |  日別電話相談件数 （札幌市保健所） |  querents  | DATA SMART CITY SAPPORO |  https://ckan.pf-sapporo.jp/dataset/covid_19_soudan  |
 
 ## Scheduling
-GitHub Actionsにより15分に一度、main.pyを実行してjson類をgh-pagesブランチに書き出します
+GitHub Actionsにより1時間に一度、main.pyを実行してjson類をgh-pagesブランチに書き出します
 
 ## 外部からのアクセス
 gh-pagesブランチにあるjsonデータに直接アクセスしてデータを読み出す事が出来ます。
