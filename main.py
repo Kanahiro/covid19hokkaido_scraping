@@ -125,7 +125,7 @@ class CovidDataManager:
                 'last_update':last_modified_time
             }
 
-    #Open Data Potal APIでCSVファイルをインポート
+    #Open Data Potal API経由でCSVファイルをインポート
     def import_odp_csv(self, key, odp_url):
         response = urllib.request.urlopen(odp_url)
 
@@ -175,9 +175,58 @@ class CovidDataManager:
             'last_update': datetime.datetime.now(JST).isoformat()
         }
 
+    #取得したデータを集計して新たにmain_summaryを生成
+    def generate_main_summary(self):
+        #検査数
+        inspection_sum = 0
+        inspections = self.data['inspections']['data']
+        for i in inspections:
+            inspection_sum += i['日検査数']
+
+        #陽性者数
+        patients_sum = 0
+        patients_summary = self.data['patients_summary']['data']
+        for p in patients_summary:
+            patients_sum += p['日陽性数']
+
+
+        #患者数、軽症・中等症者数、重傷者数、死亡者数
+        current_patients_sum = 0
+        mild_patients_sum = 0
+        critical_patients_sum = 0
+        dead_patients_sum = 0
+        current_patients = self.data['current_patients']['data']
+        for c in current_patients:
+            current_patients_sum += c['患者数']
+            if not c['軽症中等症']  == '':
+                mild_patients_sum += int(c['軽症中等症'])
+            if not c['重症']  == '':
+                critical_patients_sum += int(c['重症'])
+            if not c['死亡']  == '':
+                dead_patients_sum += int(c['死亡'])
+
+        #陰性確認者数
+        discharges_sum = 0
+        discharges_summary = self.data['discharges_summary']['data']
+        for d in discharges_summary:
+            discharges_sum += d['日治療終了数']
+
+        main_summary = {
+            '検査人数':inspection_sum,
+            '陽性者数':patients_sum,
+            '患者数':current_patients_sum,
+            '軽症・中等症者数':mild_patients_sum,
+            '重傷者数':critical_patients_sum,
+            '死亡者数':dead_patients_sum,
+            '陰性確認数':discharges_sum
+        }
+
+        self.data['main_summary'] = main_summary
+
 if __name__ == "__main__":
     dm = CovidDataManager()
     dm.fetch_datas()
+    dm.generate_main_summary()
     dm.import_local_csvs()
     dm.validate()
     dm.export_jsons()
