@@ -9,6 +9,7 @@
 ## 現在実装されているデータ
 | データ |  key  |  source  | url  |
 | ---- | ---- | ---- | ---- |
+|  最終更新日時  |  last_update  | - |  スクリプト実行時点のdatetime  |
 |  検査陽性者の状況  |  main_summary  | 北海道オープンデータポータル |  inspections, patients_summary, current_patientsを集計  |
 |  陽性患者の属性  |  patients  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369/resource/2828/patients.csv  |
 |  陽性患者数（日別）  |  patients_summary  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369/resource/2828/patients_summary.csv  |
