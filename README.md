@@ -34,8 +34,10 @@ sample: https://raw.githubusercontent.com/codeforsapporo/covid19hokkaido_scrapin
 5. cd covid19
 6. git remote add fork https://<username>:<password>@github.com/<username>/covid19.git
 7. cd ../
+
 その後は2回目以降と同様
 2回目以降
+
 1. cd covid19
 2. git pull
 3. cd ../
