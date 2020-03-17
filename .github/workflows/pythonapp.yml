@@ -31,7 +31,7 @@ jobs:
       if: failure()
       uses: rtCamp/action-slack-notify@master
       env:
-        SLACK_MESSAGE: 'Data update error occurred!'
+        SLACK_MESSAGE: 'これはSlack通知テストです：Data update error occurred!'
         SLACK_TITLE: COVID-19 Data Update Error
         SLACK_USERNAME: covid19hokkaido_scraping
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
