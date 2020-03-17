@@ -39,8 +39,7 @@ SCHEMAS = {
                 }
             },
             "last_update": {
-                #"type": "string", #test
-                "type": "integer",
+                "type": "string",
                 "default": ""
             }
         }

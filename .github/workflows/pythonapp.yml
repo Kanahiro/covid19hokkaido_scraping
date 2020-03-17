@@ -5,7 +5,7 @@ name: Python application
 
 on:
   schedule:
-    - cron:  '*/10 * * * *'
+    - cron:  '0 * * * *'
 
 jobs:
   build:
@@ -31,8 +31,8 @@ jobs:
       if: failure()
       uses: rtCamp/action-slack-notify@master
       env:
-        SLACK_MESSAGE: 'これはSlack通知テストです：Data update error occurred!'
-        SLACK_TITLE: COVID-19 Data Update Error
+        SLACK_MESSAGE: 'Error occurred! Please check a log!'
+        SLACK_TITLE: ':fire: Data Update Error :fire:'
         SLACK_USERNAME: covid19hokkaido_scraping
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     - name: deploy
