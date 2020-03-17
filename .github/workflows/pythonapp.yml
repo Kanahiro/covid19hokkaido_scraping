@@ -25,6 +25,16 @@ jobs:
     - name: Run script
       run: |
         python main.py
+    - name: Slack Notification
+      # 前Stepの実行結果を判定
+      # success() or failure() or always()
+      if: failure()
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_MESSAGE: 'Data update error occurred!'
+        SLACK_TITLE: COVID-19 Data Update Error
+        SLACK_USERNAME: covid19hokkaido_scraping
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     - name: deploy
       uses: peaceiris/actions-gh-pages@v3
       with:
