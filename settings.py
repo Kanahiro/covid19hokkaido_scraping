@@ -12,8 +12,20 @@ REMOTE_SOURCES = {
         'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2828/patients.csv',
         'type':'csv'
     },
-    'covid19_data':{
-        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2853/covid19_data.csv',
+        'patients_summary':{
+        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2829/patients_summary.csv',
+        'type':'csv'
+    },
+    'discharges_summary':{
+        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2833/discharges_summary.csv',
+        'type':'csv'
+    },
+    'current_patients':{
+        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2832/current_patients.csv',
+        'type':'csv'
+    },
+    'inspections':{
+        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2837/inspections.csv',
         'type':'csv'
     }
 }
@@ -25,7 +37,11 @@ HEADER_TRANSLATIONS = {
 #intにキャストすべきkey
 #translation後のkeyを指定する必要があります
 INT_CAST_KEYS = [
-    '小計'
+    '小計',
+    '患者数',
+    '日治療終了数',
+    '日陽性数',
+    '日検査数'
 ]
 
 #先にある順にデコードされます
