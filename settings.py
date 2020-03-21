@@ -12,7 +12,7 @@ REMOTE_SOURCES = {
         'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2828/patients.csv',
         'type':'csv'
     },
-        'patients_summary':{
+    'patients_summary':{
         'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2829/patients_summary.csv',
         'type':'csv'
     },
