@@ -235,11 +235,14 @@ class CovidDataManager:
 
 
         #患者数、軽症・中等症者数、重傷者数、死亡者数
+        current_patients_sum = 0
         mild_patients_sum = 0
         critical_patients_sum = 0
         dead_patients_sum = 0
         current_patients = self.data['current_patients']['data']
         for c in current_patients:
+            if not c['患者数']  == '':
+                current_patients_sum += c['患者数']
             if not c['軽症中等症']  == '':
                 mild_patients_sum += c['軽症中等症']
             if not c['重症']  == '':
@@ -256,7 +259,7 @@ class CovidDataManager:
         main_summary = {
             '検査人数':inspection_sum,
             '陽性者数':patients_sum,
-            '患者数':patients_sum - dead_patients_sum - discharges_sum,
+            '患者数':current_patients_sum,
             '軽症・中等症者数':mild_patients_sum,
             '重傷者数':critical_patients_sum,
             '死亡者数':dead_patients_sum,
