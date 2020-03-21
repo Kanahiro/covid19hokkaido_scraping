@@ -45,21 +45,6 @@ class CovidDataManager:
         
         self.data[key] = data
 
-    def export_csv_of(self, key):
-        maindatas = datas['data']
-        header = list(maindatas[0].keys())
-        csv_rows = [ header ]
-        for d in maindatas:
-            csv_rows.append( list(d.values()) )
-
-        with open('data/' + key + '.csv', 'w', encoding='utf-8', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerows(csv_rows)
-
-    def export_csvs(self):
-        for key in self.data:
-            self.export_csv_of(key)
-
     def export_json_of(self, key, directory='data/'):
         with open(directory + key + '.json', 'w', encoding='utf-8') as f:
             json.dump(self.data[key], f, indent=4, ensure_ascii=False)
@@ -79,6 +64,7 @@ class CovidDataManager:
             data = {}
             for i in range(len(header)):
                 data[header[i]] = d[i]
+                #特定のカラムのデータを整数値にキャスト
                 if header[i] in INT_CAST_KEYS:
                     data[header[i]] = int(d[i])
             datas.append(data)
@@ -125,41 +111,6 @@ class CovidDataManager:
                 'last_update':last_modified_time
             }
 
-    #Open Data Potal API経由でCSVファイルをインポート
-    def import_odp_csv(self, key, odp_url):
-        response = urllib.request.urlopen(odp_url)
-
-        status_code = response.getcode()
-        if not status_code == 200:
-            print(status_code, 'error occured')
-            return
-
-        loaded_json = json.loads(response.read().decode('utf-8'))
-        if not loaded_json['success']:
-            print('get json error')
-            return
-
-        url = ''
-        updated_datetime = ''
-        resources = loaded_json['result']['resources']
-        for resource in resources:
-            if resource['name'] == key + '.csv':
-                url = resource['download_url']
-                updated_datetime = resource['updated'] #iso-8601
-
-        request_file = urllib.request.urlopen(url)
-        if not request_file.getcode() == 200:
-            print('csv get error')
-            return
-        
-        csvstr = self.decode_csv(request_file.read())
-        datas = self.csvstr_to_dicts(csvstr)
-
-        return {
-            'data':datas,
-            'last_update':updated_datetime
-        }
-
     #外部のCSVファイルをインポート url=xxxx/xxxx.csv
     def import_csv_from(self, csvurl):
         request_file = urllib.request.urlopen(csvurl)
@@ -174,6 +125,99 @@ class CovidDataManager:
             'data': datas,
             'last_update': datetime.datetime.now(JST).isoformat()
         }
+
+    def generate_current_patients(self, covid19_data):
+        current_patients = {
+            'data':[],
+            'last_update':datetime.datetime.now(JST).isoformat()
+        }
+
+        data_keys = [
+            '日患者数',
+            '日軽症中等症数',
+            '日重症数',
+            '日死亡数'
+        ]
+        
+        for d in covid19_data:
+            for key in data_keys:
+                if d[key] == '':
+                    d[key] = "0"
+
+            daily_data = {
+                '日付':self.make_datetime_str(d['年'],d['月'],d['日']),
+                '患者数':int(d['日患者数']),
+                '軽症中等症':int(d['日軽症中等症数']),
+                '重症':int(d['日重症数']),
+                '死亡':int(d['日死亡数'])
+            }
+
+            current_patients['data'].append(daily_data)
+
+        self.data['current_patients'] = current_patients
+    
+    def generate_discharges_summary(self, covid19_data):
+        discharges_summary = {
+            'data':[],
+            'last_update':datetime.datetime.now(JST).isoformat()
+        }
+        
+        for d in covid19_data:
+            try:
+                daily_data = {
+                    '日付':self.make_datetime_str(d['年'],d['月'],d['日']),
+                    '日治療終了数':int(d['日治療終了数'])
+                }
+            except:
+                print('データがありません:' + self.make_datetime_str(d['年'],d['月'],d['日']))
+                continue
+            discharges_summary['data'].append(daily_data)
+
+        self.data['discharges_summary'] = discharges_summary
+
+    def generate_inspections(self, covid19_data):
+        inspections = {
+            'data':[],
+            'last_update':datetime.datetime.now(JST).isoformat()
+        }
+        
+        for d in covid19_data:
+            try:
+                daily_data = {
+                    '日付':self.make_datetime_str(d['年'],d['月'],d['日']),
+                    '日検査数':int(d['日検査数'])
+                }
+            except:
+                print('データがありません:' + self.make_datetime_str(d['年'],d['月'],d['日']))
+                continue
+            inspections['data'].append(daily_data)
+
+        self.data['inspections'] = inspections
+
+    def generate_patients_summary(self, covid19_data):
+        patients_summary = {
+            'data':[],
+            'last_update':datetime.datetime.now(JST).isoformat()
+        }
+        
+        for d in covid19_data:
+            try:
+                daily_data = {
+                    '日付':self.make_datetime_str(d['年'],d['月'],d['日']),
+                    '日陽性数':int(d['日陽性数'])
+                }
+            except:
+                print('データがありません:' + self.make_datetime_str(d['年'],d['月'],d['日']))
+                continue
+            patients_summary['data'].append(daily_data)
+
+        self.data['patients_summary'] = patients_summary
+
+    def make_datetime_str(self, year, month, day)->str:
+        #ゼロ埋め2桁
+        mm = month.zfill(2)
+        dd = day.zfill(2)
+        return str(year) + '-' + str(mm) + '-' + str(dd)
 
     #取得したデータを集計して新たにmain_summaryを生成
     def generate_main_summary(self):
@@ -197,13 +241,14 @@ class CovidDataManager:
         dead_patients_sum = 0
         current_patients = self.data['current_patients']['data']
         for c in current_patients:
-            current_patients_sum += c['患者数']
+            if not c['患者数']  == '':
+                current_patients_sum += c['患者数']
             if not c['軽症中等症']  == '':
-                mild_patients_sum += int(c['軽症中等症'])
+                mild_patients_sum += c['軽症中等症']
             if not c['重症']  == '':
-                critical_patients_sum += int(c['重症'])
+                critical_patients_sum += c['重症']
             if not c['死亡']  == '':
-                dead_patients_sum += int(c['死亡'])
+                dead_patients_sum += c['死亡']
 
         #陰性確認者数
         discharges_sum = 0
@@ -223,10 +268,22 @@ class CovidDataManager:
 
         self.data['main_summary'] = main_summary
 
+    def generate_datas(self):
+        self.generate_current_patients(self.data['covid19_data']['data'])
+        self.generate_discharges_summary(self.data['covid19_data']['data'])
+        self.generate_patients_summary(self.data['covid19_data']['data'])
+        self.generate_inspections(self.data['covid19_data']['data'])
+        self.generate_main_summary()
+
 if __name__ == "__main__":
     dm = CovidDataManager()
+    #REMOTE_SOUCESのすべてのソースにアクセス・データ取得しself.dataに保存:patients, covid19_data, contacts, querents
     dm.fetch_datas()
-    dm.generate_main_summary()
+    #covid19_data.csvのデータを集計してpatients以外のデータを生成しself.dataに保存
+    dm.generate_datas()
+    #importディレクトリにあるcsvを読み込みself.dataに保存
     dm.import_local_csvs()
+    #dict型であるself.dataの全要素がスキーマ定義に適合するかチェック
     dm.validate()
+    #self.dataの全要素をjson形式で出力
     dm.export_jsons()
