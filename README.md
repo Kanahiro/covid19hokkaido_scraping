@@ -18,8 +18,8 @@
 |  日別患者増減数  |  current_patients  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369/resource/2853/covid19_data.csv を集計|
 |  治療修了者数  |  discharges_summary  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369/resource/2853/covid19_data.csv を集計|
 |  日別検査数  |  inspections  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369/resource/2853/covid19_data.csv を集計|
-|  日別窓口相談件数（札幌市保健所）  |  contacts  | DATA SMART CITY SAPPORO |  https://ckan.pf-sapporo.jp/dataset/covid_19_soudan  |
-|  日別電話相談件数 （札幌市保健所） |  querents  | DATA SMART CITY SAPPORO |  https://ckan.pf-sapporo.jp/dataset/covid_19_soudan  |
+|  日別窓口相談件数（札幌市保健所）  |  contacts  | DATA SMART CITY SAPPORO |  https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/e9e6f062-cafd-4aea-992f-039e2e26f4ac/download/contacts.csv  |
+|  日別電話相談件数 （札幌市保健所） |  querents  | DATA SMART CITY SAPPORO |  https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/a89ba566-93d1-416a-a269-e0ba48a06636/download/querents.csv  |
 
 ## Scheduling
 GitHub Actionsにより1時間に一度、main.pyを実行してjson類をgh-pagesブランチに書き出します
@@ -27,31 +27,3 @@ GitHub Actionsにより1時間に一度、main.pyを実行してjson類をgh-pag
 ## 外部からのアクセス
 gh-pagesブランチにあるjsonデータに直接アクセスしてデータを読み出す事が出来ます。
 sample: https://raw.githubusercontent.com/codeforsapporo/covid19hokkaido_scraping/gh-pages/patients.json
-
-## webへのデータ更新方法
-初回のみ
-1. 自分のgithubのアカウントにcovid19のほうのリポジトリをfork
-2. git をインストール
-3. git clone -b gh-pages https://github.com/codeforsapporo/covid19hokkaido_scraping.git
-4. git clone https://github.com/codeforsapporo/covid19.git
-5. cd covid19
-6. git remote add fork https://<username>:<password>@github.com/<username>/covid19.git
-7. cd ../
-
-その後は2回目以降と同様
-2回目以降
-
-1. cd covid19
-2. git pull
-3. cd ../
-4. cd covid19hokkaido_scraping
-5. git pull
-6. cd ../
-7. covid19hokkaido_scraping内のjsonファイルをすべてcovid19/dataのjsonファイルに上書き
-8. cd covid19
-9. git add .
-10. git commit -m 'UpdateData'
-11. git push fork development
-12. githubからbase repositoryをcodeforsapporo/covid19 development 、　head repositoryを :<username>/covid19 developmetに設定
-13. create pull request
-14. わかりやすいpullrequest名を入れcreate pull request
