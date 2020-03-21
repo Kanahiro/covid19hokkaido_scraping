@@ -101,23 +101,6 @@ class CovidDataManager:
                 continue
         print('Appropriate codec is not found.')
 
-
-    #importフォルダ内のCSVを全て読み込む
-    def import_local_csvs(self):
-        csvfiles = glob.glob('./import/*.csv')
-        for csvfile in csvfiles:
-            filename = os.path.splitext(os.path.basename(csvfile))[0]
-            last_modified_time = datetime.datetime.fromtimestamp(os.path.getmtime(csvfile), JST).isoformat()
-            datas = []
-
-            with open(csvfile, encoding='utf-8') as f:
-                datas = self.csvstr_to_dicts(f.read())
-
-            self.data[filename] = {
-                'data':datas,
-                'last_update':last_modified_time
-            }
-
     #外部のCSVファイルをインポート url=xxxx/xxxx.csv
     def import_csv_from(self, csvurl):
         request_file = urllib.request.urlopen(csvurl)
@@ -288,8 +271,6 @@ if __name__ == "__main__":
     dm.fetch_datas()
     #covid19_data.csvのデータを集計してpatients以外のデータを生成しself.dataに保存
     dm.generate_datas()
-    #importディレクトリにあるcsvを読み込みself.dataに保存
-    dm.import_local_csvs()
     #dict型であるself.dataの全要素がスキーマ定義に適合するかチェック
     dm.validate()
     #self.dataの全要素をjson形式で出力
