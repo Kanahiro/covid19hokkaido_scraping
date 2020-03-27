@@ -577,11 +577,21 @@ class CovidDataManager:
         self.data['main_summary'] = main_summary
 
     def generate_datas(self):
+        print('---current_patients.json---')
         self.generate_current_patients(self.data['covid19_data']['data'])
+        print('---done---')
+        print('---discharges_summary.json---')
         self.generate_discharges_summary(self.data['covid19_data']['data'])
+        print('---done---')
+        print('---patients_summary.json---')
         self.generate_patients_summary(self.data['covid19_data']['data'])
+        print('---done---')
+        print('---inspections.json---')
         self.generate_inspections(self.data['covid19_data']['data'])
+        print('---done---')
+        print('---main_summary.json---')
         self.generate_main_summary()
+        print('---done---')
 
 if __name__ == "__main__":
     dm = CovidDataManager()
