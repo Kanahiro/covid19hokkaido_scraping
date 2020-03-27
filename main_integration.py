@@ -410,12 +410,14 @@ class CovidDataManager:
 
     #デコード出来るまでCODECS内全コーデックでトライする
     def decode_csv(self, csv_data)->str:
+        print('---decode csv---')
         for codec in CODECS:
             try:
                 csv_str = csv_data.decode(codec)
+                print('ok:' + codec)
                 return csv_str
             except:
-                print('NG:' + codec)
+                print('ng:' + codec)
                 continue
         print('Appropriate codec is not found.')
 
@@ -477,7 +479,6 @@ class CovidDataManager:
                     '日治療終了数':int(d['日治療終了数'])
                 }
             except:
-                print('データがありません:' + self.make_datetime_str(d['年'],d['月'],d['日']))
                 continue
             discharges_summary['data'].append(daily_data)
 
@@ -496,7 +497,6 @@ class CovidDataManager:
                     '日検査数':int(d['日検査数'])
                 }
             except:
-                print('データがありません:' + self.make_datetime_str(d['年'],d['月'],d['日']))
                 continue
             inspections['data'].append(daily_data)
 
@@ -515,7 +515,6 @@ class CovidDataManager:
                     '日陽性数':int(d['日陽性数'])
                 }
             except:
-                print('データがありません:' + self.make_datetime_str(d['年'],d['月'],d['日']))
                 continue
             patients_summary['data'].append(daily_data)
 
