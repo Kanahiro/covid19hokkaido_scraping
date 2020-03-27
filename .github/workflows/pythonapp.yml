@@ -25,9 +25,6 @@ jobs:
     - name: Run script
       run: |
         python main.py
-    - name: Run script
-      run: |
-        python main_integration.py
     - name: Slack Notification
       # 前Stepの実行結果を判定
       # success() or failure() or always()
