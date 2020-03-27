@@ -192,6 +192,8 @@ class CovidDataManager:
         header = self.translate_header(header)
         maindatas = rows[1:]
         for d in maindatas:
+            if d == []:
+                continue
             data = {}
             for i in range(len(header)):
                 data[header[i]] = d[i]
