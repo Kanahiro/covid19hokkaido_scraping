@@ -32,5 +32,7 @@ GitHub Actionsにより1時間に一度、すべてjson類をgh-pagesブラン�
 
 ## 外部からのアクセス
 gh-pagesブランチにあるjsonデータに直接アクセスしてデータを読み出す事が出来ます。
+
 sample1: https://codeforsapporo.github.io/covid19hokkaido_scraping/patients.json
+
 sample2: https://raw.githubusercontent.com/codeforsapporo/covid19hokkaido_scraping/gh-pages/patients.json
