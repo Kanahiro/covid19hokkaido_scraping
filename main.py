@@ -6,18 +6,15 @@ import os
 import urllib.request
 import jsonschema
 
-import settings
-
 #日本標準時
 JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
-#外部ファイルの参照設定
-REMOTE_SOURCES = settings.REMOTE_SOURCES
-#headerの変換一覧
-HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS
-#intにキャストすべきkey
-INT_CAST_KEYS = settings.INT_CAST_KEYS
-#ファイルエンコーディングリスト
-CODECS = settings.CODECS
+
+#設定ファイル
+import settings
+REMOTE_SOURCES = settings.REMOTE_SOURCES #外部ファイルの参照設定
+HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS #headerの変換一覧
+INT_CAST_KEYS = settings.INT_CAST_KEYS #intにキャストすべきkey
+CODECS = settings.CODECS #ファイルエンコーディングリスト
 
 #バリデーション用のスキーマ定義
 import schemas
@@ -35,6 +32,7 @@ class CovidDataManager:
             self.fetch_data_of(key)
 
     def fetch_data_of(self, key):
+        print(key)
         datatype = REMOTE_SOURCES[key]['type']
         dataurl = REMOTE_SOURCES[key]['url']
         data = {}
@@ -66,6 +64,7 @@ class CovidDataManager:
 
     def export_jsons(self, directory='data/'):
         for key in self.data:
+            print(key + '.json')
             self.export_json_of(key, directory)
 
     #CSV文字列を[dict]型に変換
@@ -102,12 +101,14 @@ class CovidDataManager:
 
     #デコード出来るまでCODECS内全コーデックでトライする
     def decode_csv(self, csv_data)->str:
+        print('csv decoding')
         for codec in CODECS:
             try:
                 csv_str = csv_data.decode(codec)
+                print('ok:' + codec)
                 return csv_str
             except:
-                print('NG:' + codec)
+                print('ng:' + codec)
                 continue
         print('Appropriate codec is not found.')
 
@@ -178,58 +179,17 @@ class CovidDataManager:
             'last_update': datetime.datetime.now(JST).isoformat()
         }
 
-    #取得したデータを集計して新たにmain_summaryを生成
-    def generate_main_summary(self):
-        #検査数
-        inspection_sum = 0
-        inspections = self.data['inspections']['data']
-        for i in inspections:
-            inspection_sum += i['日検査数']
-
-        #陽性者数
-        patients_sum = 0
-        patients_summary = self.data['patients_summary']['data']
-        for p in patients_summary:
-            patients_sum += p['日陽性数']
-
-
-        #患者数、軽症・中等症者数、重傷者数、死亡者数
-        current_patients_sum = 0
-        mild_patients_sum = 0
-        critical_patients_sum = 0
-        dead_patients_sum = 0
-        current_patients = self.data['current_patients']['data']
-        for c in current_patients:
-            current_patients_sum += c['患者数']
-            if not c['軽症中等症']  == '':
-                mild_patients_sum += int(c['軽症中等症'])
-            if not c['重症']  == '':
-                critical_patients_sum += int(c['重症'])
-            if not c['死亡']  == '':
-                dead_patients_sum += int(c['死亡'])
-
-        #陰性確認者数
-        discharges_sum = 0
-        discharges_summary = self.data['discharges_summary']['data']
-        for d in discharges_summary:
-            discharges_sum += d['日治療終了数']
-
-        main_summary = {
-            '検査人数':inspection_sum,
-            '陽性者数':patients_sum,
-            '患者数':current_patients_sum,
-            '軽症・中等症者数':mild_patients_sum,
-            '重傷者数':critical_patients_sum,
-            '死亡者数':dead_patients_sum,
-            '陰性確認数':discharges_sum
-        }
-
-        self.data['main_summary'] = main_summary
-
 if __name__ == "__main__":
     dm = CovidDataManager()
+    print('---fetch data---')
+    #REMOTE_SOUCESのすべてのソースにアクセス・データ取得しself.dataに保存
     dm.fetch_datas()
-    dm.generate_main_summary()
+    print('---done---')
+    #importフォルダ内のCSVをすべて読み込んでself.dataに保存
     dm.import_local_csvs()
+    print('---export jsons---')
+    #dict型であるself.dataの全要素がスキーマ定義に適合するかチェック
     dm.validate()
+    #self.dataの全要素をjson形式で出力
     dm.export_jsons()
+    print('---done---')

@@ -27,7 +27,7 @@ jobs:
         python main.py
     - name: Run covid19_data analyzing script
       run: |
-        python main_integration.py
+        python covid19_data.py
     - name: Slack Notification
       # 前Stepの実行結果を判定
       # success() or failure() or always()
