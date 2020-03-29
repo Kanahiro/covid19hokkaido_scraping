@@ -299,5 +299,80 @@ SCHEMAS = {
                 "default": 0
             }
         }
+    },
+    'covid19_data':{
+        "type": "object",
+        "required": [
+            "data",
+            "last_update"
+        ],
+        "properties": {
+            "data": {
+                "type": "array",
+                "default": [],
+                "items": {
+                    "type": "object",
+                    "default": {},
+                    "required": [
+                        "年",
+                        "月",
+                        "日",
+                        "日検査数",
+                        "日陽性数",
+                        "日患者数",
+                        "日軽症中等症数",
+                        "日重症数",
+                        "日死亡数",
+                        "日治療終了数"
+                    ],
+                    "properties": {
+                        "年": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "月": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "日": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "日検査数": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "日陽性数": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "日患者数": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "日軽症中等症数": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "日重症数": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "日死亡数": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "日治療終了数": {
+                            "type": "string",
+                            "default": ""
+                        }
+                    }
+                }
+            },
+            "last_update": {
+                "type": "string",
+                "default": ""
+            }
+        }
     }
 }
