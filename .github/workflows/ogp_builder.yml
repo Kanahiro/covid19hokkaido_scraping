@@ -16,7 +16,7 @@ jobs:
         with:
           ref: ${{ steps.extract_branch.outputs.branch }}
       - run: pip3 install selenium
-      - run: python3 ./ui-test/ogp-screenshot.py
+      - run: python3 ./ogp-screenshot.py
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
