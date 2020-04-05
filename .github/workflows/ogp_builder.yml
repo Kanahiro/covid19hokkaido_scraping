@@ -17,11 +17,13 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ steps.extract_branch.outputs.branch }}
-      - run: pip3 install selenium
-      - run: python3 ./ogp-screenshot.py
       - run: |
+          mkdir ogp
           cd ./ogp
           git pull https://github.com/codeforsapporo/covid19hokkaido_scraping.git gh-pages
+          cd ../
+      - run: pip3 install selenium
+      - run: python3 ./ogp-screenshot.py
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
