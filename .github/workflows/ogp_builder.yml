@@ -2,7 +2,9 @@ name: OGP Builder
 
 on:
   schedule:
-    - cron:  '12 0-17,19-23 * * *'
+    - cron:  '* 0-17,19-23 * * *'
+  push:
+    branches: master
 
 jobs:
   build:
@@ -17,6 +19,9 @@ jobs:
           ref: ${{ steps.extract_branch.outputs.branch }}
       - run: pip3 install selenium
       - run: python3 ./ogp-screenshot.py
+      - run: |
+          cd ./ogp
+          git pull https://github.com/codeforsapporo/covid19hokkaido_scraping.git gh-pages
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
