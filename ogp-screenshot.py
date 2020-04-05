@@ -39,3 +39,6 @@ for lang in ("ja", "en", "zh-cn", "zh-tw", "ko", "ja-basic"):
         path if lang == "ja" else "{}/{}".format(lang, path)
       )
     )
+    print( "https://stopcovid19-dev.hokkaido.dev{}?ogp=true".format(
+        path if lang == "ja" else "/{}{}".format(lang, path)
+      ))
