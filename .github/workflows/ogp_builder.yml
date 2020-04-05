@@ -18,7 +18,7 @@ jobs:
         with:
           ref: ${{ steps.extract_branch.outputs.branch }}
       - run: |
-          git pull -c ogp https://github.com/codeforsapporo/covid19hokkaido_scraping.git gh-pages
+          git pull -b gh-pages https://github.com/codeforsapporo/covid19hokkaido_scraping.git ogp
       - run: pip3 install selenium
       - run: python3 ./ogp-screenshot.py
       - name: deploy
