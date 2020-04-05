@@ -11,40 +11,22 @@ REMOTE_SOURCES = {
     'patients':{
         'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2828/patients.csv',
         'type':'csv'
-    },
-    'patients_summary':{
-        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2829/patients_summary.csv',
-        'type':'csv'
-    },
-    'discharges_summary':{
-        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2833/discharges_summary.csv',
-        'type':'csv'
-    },
-    'current_patients':{
-        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2832/current_patients.csv',
-        'type':'csv'
-    },
-    'inspections':{
-        'url':'https://www.harp.lg.jp/opendata/dataset/1369/resource/2837/inspections.csv',
-        'type':'csv'
     }
 }
 
 #ヘッダーにkeyがあればvalueに置き換えます
 HEADER_TRANSLATIONS = {
-    'No':'no',
-    '\ufeffNo':'no',#ODPのデータが綺麗になったら不要
-    'リリース日':'date',
-    '居住地':'place',
-    '年代':'age',
-    '性別':'sex',
-    '小計':'subtotal',
-    '日付':'date',
-    '患者数':'subtotal',
-    '日陽性数':'subtotal',
-    '日治療終了数':'subtotal',
-    '日検査数':'subtotal'
 }
+
+#intにキャストすべきkey
+#translation後のkeyを指定する必要があります
+INT_CAST_KEYS = [
+    '小計',
+    '患者数',
+    '日治療終了数',
+    '日陽性数',
+    '日検査数'
+]
 
 #先にある順にデコードされます
 CODECS = ['utf-8','cp932','shift_jis','euc_jp',

@@ -4,24 +4,35 @@
 北海道の新型コロナウイルス情報を集め、jsonやcsvとして出力するPythonスクリプトです
 
 ## Specification
-- main.pyを実行すると、①settings.pyのREMOTE_SOURCESに基づき外部データを取得し、②importフォルダ内のcsvを読み込んで、データの数だけjsonファイルを出力します
-- jsonの出力前に、データのカラム名は[北海道 新型コロナウイルスまとめサイト](https://github.com/codeforsapporo/covid19)に準拠するよう変換されます(settings.pyのHEADER_TRANSLATIONSに基づきます)
-- settings.pyとimportフォルダ内に、同じkeyがある場合、importフォルダが優先されます
+#### main.py
+- main.pyを実行すると、①settings.pyのREMOTE_SOURCESに基づき外部データを取得し、②①のデータを集計してmain_summaryを生成し、③importフォルダ内のcsvを読み込んで、それら全てのデータのjsonファイルを出力します
+- jsonの出力前に、schemas.pyのスキーマ定義に基づきデータがバリデーションされます（データに異常があった場合jsonは出力されません）
+- settings.pyとimportフォルダ内に同じkeyがある場合、importフォルダが優先されます
+- このスクリプトでは、1つのCSVが1つのJSONに対応します（last_updateをのぞく）
 
-## 現在実装されているデータ
-| データ |  key  |  source  | url  |
+#### covid19_data.py
+- ODPのcovid19_data.csvを集計して、5つのjsonファイルを生成します（以下の対応表のとおり）
+
+
+## 出力されるデータ
+| データ |  key  |  source  | note  |
 | ---- | ---- | ---- | ---- |
-|  陽性患者の属性  |  patients  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
-|  陽性患者数（日別）  |  patients_summary  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
-|  日別患者増減数  |  current_patients  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
-|  治療修了者数  |  discharges_summary  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
-|  日別検査数  |  inspections  | 北海道オープンデータポータル |  https://www.harp.lg.jp/opendata/dataset/1369.html  |
-|  日別窓口相談件数（札幌市保健所）  |  contacts  | DATA SMART CITY SAPPORO |  https://ckan.pf-sapporo.jp/dataset/covid_19_soudan  |
-|  日別電話相談件数 （札幌市保健所） |  querents  | DATA SMART CITY SAPPORO |  https://ckan.pf-sapporo.jp/dataset/covid_19_soudan  |
+|  最終更新日時  |  last_update  | スクリプト実行時点のdatetime |  main.pyで生成  |
+|  検査陽性者の状況  |  main_summary  |　https://www.harp.lg.jp/opendata/dataset/1369/resource/2853/covid19_data.csv を集計 |  covid19_data.pyで生成  |
+|  陽性患者数（日別）  |  patients_summary  | https://www.harp.lg.jp/opendata/dataset/1369/resource/2853/covid19_data.csv を集計 |  covid19_data.pyで生成  |
+|  日別患者増減数  |  current_patients  | https://www.harp.lg.jp/opendata/dataset/1369/resource/2853/covid19_data.csv を集計 |  covid19_data.pyで生成  |
+|  治療修了者数  |  discharges_summary  | https://www.harp.lg.jp/opendata/dataset/1369/resource/2853/covid19_data.csv を集計 |  covid19_data.pyで生成  |
+|  日別検査数  |  inspections  | https://www.harp.lg.jp/opendata/dataset/1369/resource/2853/covid19_data.csv を集計 |  covid19_data.pyで生成  |
+|  陽性患者の属性  |  patients  | https://www.harp.lg.jp/opendata/dataset/1369/resource/2828/patients.csv |  main.pyで生成  |
+|  日別窓口相談件数（札幌市保健所）  |  contacts  | https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/e9e6f062-cafd-4aea-992f-039e2e26f4ac/download/contacts.csv |  main.pyで生成  |
+|  日別電話相談件数 （札幌市保健所） |  querents  | https://ckan.pf-sapporo.jp/dataset/f6338cc2-dd6b-43b6-98a3-cd80b05b6a36/resource/a89ba566-93d1-416a-a269-e0ba48a06636/download/querents.csv |  main.pyで生成  |
 
 ## Scheduling
-GitHub Actionsにより15分に一度、main.pyを実行してjson類をgh-pagesブランチに書き出します
+GitHub Actionsにより1時間に一度、すべてjson類をgh-pagesブランチに書き出します
 
 ## 外部からのアクセス
 gh-pagesブランチにあるjsonデータに直接アクセスしてデータを読み出す事が出来ます。
-sample: https://raw.githubusercontent.com/codeforsapporo/covid19hokkaido_scraping/gh-pages/patients.json
+
+sample1: https://codeforsapporo.github.io/covid19hokkaido_scraping/patients.json
+
+sample2: https://raw.githubusercontent.com/codeforsapporo/covid19hokkaido_scraping/gh-pages/patients.json

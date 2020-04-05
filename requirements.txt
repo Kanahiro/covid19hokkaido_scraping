@@ -1,0 +1,5 @@
+jsonschema==3.2.0
+pyrsistent==0.15.7
+six==1.14.0
+soupsieve==1.9.5
+zipp==3.1.0

@@ -4,18 +4,21 @@ import datetime
 import glob
 import os
 import urllib.request
-
-import settings
+import jsonschema
 
 #日本標準時
 JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
-#外部ファイルの参照設定
-REMOTE_SOURCES = settings.REMOTE_SOURCES
-#headerの変換一覧
-#元データのヘッダーとフロントで設定されているヘッダーのペア
-HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS
-#ファイルエンコーディングリスト
-CODECS = settings.CODECS
+
+#設定ファイル
+import settings
+REMOTE_SOURCES = settings.REMOTE_SOURCES #外部ファイルの参照設定
+HEADER_TRANSLATIONS = settings.HEADER_TRANSLATIONS #headerの変換一覧
+INT_CAST_KEYS = settings.INT_CAST_KEYS #intにキャストすべきkey
+CODECS = settings.CODECS #ファイルエンコーディングリスト
+
+#バリデーション用のスキーマ定義
+import schemas
+SCHEMAS = schemas.SCHEMAS
 
 class CovidDataManager:
     def __init__(self):
@@ -29,6 +32,7 @@ class CovidDataManager:
             self.fetch_data_of(key)
 
     def fetch_data_of(self, key):
+        print(key)
         datatype = REMOTE_SOURCES[key]['type']
         dataurl = REMOTE_SOURCES[key]['url']
         data = {}
@@ -60,6 +64,7 @@ class CovidDataManager:
 
     def export_jsons(self, directory='data/'):
         for key in self.data:
+            print(key + '.json')
             self.export_json_of(key, directory)
 
     #CSV文字列を[dict]型に変換
@@ -70,13 +75,21 @@ class CovidDataManager:
         header = self.translate_header(header)
         maindatas = rows[1:]
         for d in maindatas:
+            #空行はスキップ
+            if d == []:
+                continue
             data = {}
             for i in range(len(header)):
                 data[header[i]] = d[i]
-                if header[i] == 'subtotal':
-                    data['subtotal'] = int(d[i])
+                if header[i] in INT_CAST_KEYS:
+                    data[header[i]] = int(d[i])
             datas.append(data)
         return datas
+
+    #生成されるjsonの正当性チェック
+    def validate(self):
+        for key in self.data:
+            jsonschema.validate(self.data[key], SCHEMAS[key])
 
     #HEADER_TRANSLATIONSに基づきデータのヘッダ(key)を変換
     def translate_header(self, header:list)->list:
@@ -88,12 +101,14 @@ class CovidDataManager:
 
     #デコード出来るまでCODECS内全コーデックでトライする
     def decode_csv(self, csv_data)->str:
+        print('csv decoding')
         for codec in CODECS:
             try:
                 csv_str = csv_data.decode(codec)
+                print('ok:' + codec)
                 return csv_str
             except:
-                print('NG:' + codec)
+                print('ng:' + codec)
                 continue
         print('Appropriate codec is not found.')
 
@@ -114,7 +129,7 @@ class CovidDataManager:
                 'last_update':last_modified_time
             }
 
-    #Open Data Potal APIでCSVファイルをインポート
+    #Open Data Potal API経由でCSVファイルをインポート
     def import_odp_csv(self, key, odp_url):
         response = urllib.request.urlopen(odp_url)
 
@@ -166,6 +181,15 @@ class CovidDataManager:
 
 if __name__ == "__main__":
     dm = CovidDataManager()
+    print('---fetch data---')
+    #REMOTE_SOUCESのすべてのソースにアクセス・データ取得しself.dataに保存
     dm.fetch_datas()
+    print('---done---')
+    #importフォルダ内のCSVをすべて読み込んでself.dataに保存
     dm.import_local_csvs()
+    print('---export jsons---')
+    #dict型であるself.dataの全要素がスキーマ定義に適合するかチェック
+    dm.validate()
+    #self.dataの全要素をjson形式で出力
     dm.export_jsons()
+    print('---done---')
