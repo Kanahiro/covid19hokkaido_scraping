@@ -43,3 +43,24 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./data
         publish_branch: gh-pages
+
+  deploy:
+    runs-on: macos-latest
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.extract_branch.outputs.branch }}
+      - run: |
+          git clone -b gh-pages https://github.com/codeforsapporo/covid19hokkaido_scraping.git ogp
+      - run: pip3 install selenium
+      - run: python3 ./ogp-screenshot.py
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ogp
+          publish_branch: gh-pages
