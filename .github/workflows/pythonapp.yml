@@ -43,7 +43,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: data
-        path: data
+        path: ./data
   deploy:
     runs-on: macos-latest
     steps:
