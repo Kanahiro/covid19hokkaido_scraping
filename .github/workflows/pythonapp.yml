@@ -10,7 +10,7 @@ on:
     branches: master
 jobs:
   build:
-
+    name: parse
     runs-on: ubuntu-latest
 
     steps:
@@ -39,12 +39,21 @@ jobs:
         SLACK_TITLE: ':fire: Data Update Error :fire:'
         SLACK_USERNAME: covid19hokkaido_scraping
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+    - name: deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./data
+        publish_branch: ogp-pages
     - name: Upload screenshot
       uses: actions/upload-artifact@v1
       with:
         name: data
         path: ./data
   deploy:
+    name: Build OGP
+    needs: build
     runs-on: macos-latest
     steps:
       - name: Extract branch name
