@@ -39,13 +39,6 @@ jobs:
         SLACK_TITLE: ':fire: Data Update Error :fire:'
         SLACK_USERNAME: covid19hokkaido_scraping
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-
-    - name: deploy
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./data
-        publish_branch: ogp-pages
     - name: Upload screenshot
       uses: actions/upload-artifact@v1
       with:
@@ -76,4 +69,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./ogp
-          publish_branch: ogp-pages
+          publish_branch: gh-pages
