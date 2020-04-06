@@ -39,13 +39,11 @@ jobs:
         SLACK_TITLE: ':fire: Data Update Error :fire:'
         SLACK_USERNAME: covid19hokkaido_scraping
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-    - name: deploy
-      uses: peaceiris/actions-gh-pages@v3
+    - name: Upload screenshot
+      uses: actions/upload-artifact@v1
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./data
-        publish_branch: gh-pages
-
+        name: data
+        path: data
   deploy:
     runs-on: macos-latest
     steps:
@@ -56,8 +54,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ steps.extract_branch.outputs.branch }}
-      - run: |
-          git clone -b gh-pages https://github.com/codeforsapporo/covid19hokkaido_scraping.git ogp
+      
+      - name: Download ogp images
+        uses: actions/download-artifact@v1
+        with:
+          name: data  
+          path: ./ogp
       - run: pip3 install selenium
       - run: python3 ./ogp-screenshot.py
       - name: deploy
@@ -65,4 +67,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./ogp
-          publish_branch: gh-pages
+          publish_branch: ogp-pages
